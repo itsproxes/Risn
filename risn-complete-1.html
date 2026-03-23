@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Risn">
+<meta name="description" content="Risn — Rise every day. AI wellness for mind, body, nutrition & habits.">
+<title>Risn — Rise Every Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+const manifestData={name:"Risn — Rise Every Day",short_name:"Risn",description:"AI wellness for mind, body, nutrition & habits",start_url:"/",display:"standalone",background_color:"#0a0f14",theme_color:"#0a0f14",orientation:"portrait",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%230a0f14'/><text y='130' x='96' text-anchor='middle' font-size='110' font-family='sans-serif' fill='%2364ffb4'>R</text></svg>",sizes:"192x192",type:"image/svg+xml"}]};
+const blob=new Blob([JSON.stringify(manifestData)],{type:'application/json'});
+document.write(`<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
+</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0f14;--surface:#111820;--surface2:#161e28;--surface3:#1c2530;
+  --border:rgba(100,255,180,0.08);--border2:rgba(255,255,255,0.06);
+  --accent:#64ffb4;--gold:#ffd166;--red:#ff6b6b;--blue:#74b9ff;--orange:#ff9f43;--purple:#a29bfe;
+  --text:#e8f0fe;--text-dim:rgba(232,240,254,0.5);--text-muted:rgba(232,240,254,0.22);
+}
+html,body{height:100%;overflow:hidden;background:#060a0d;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;color:var(--text);}
+
+/* ── PHONE SHELL ── */
+.phone{width:390px;height:844px;background:var(--bg);border-radius:52px;border:1.5px solid rgba(100,255,180,0.12);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 60px 120px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.04);position:relative;}
+
+/* ── STATUS BAR ── */
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 6px;font-size:12px;font-weight:700;color:var(--text-muted);font-family:'Syne',sans-serif;flex-shrink:0;background:var(--bg);}
+
+/* ── SCREENS ── */
+.screens{flex:1;overflow:hidden;position:relative;}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;flex-direction:column;-webkit-overflow-scrolling:touch;padding-bottom:24px;}
+.screen::-webkit-scrollbar{display:none;}
+.screen.active{display:flex;animation:screenIn 0.3s cubic-bezier(0.25,0.46,0.45,0.94);}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:flex;flex-shrink:0;background:rgba(10,15,20,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 20px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;transition:all 0.2s;position:relative;}
+.nav-icon{font-size:21px;transition:transform 0.25s;}
+.nav-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600;}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;top:1px;opacity:0;transition:opacity 0.2s;}
+.nav-item.active .nav-label{color:var(--accent);}
+.nav-item.active .nav-icon{transform:scale(1.2);filter:drop-shadow(0 0 8px rgba(100,255,180,0.5));}
+.nav-item.active .nav-dot{opacity:1;}
+
+/* ── SHARED COMPONENTS ── */
+.pad{padding:0 20px;}
+.slabel{font-family:'Syne',sans-serif;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.screen-header{padding:16px 20px 0;}
+.screen-title{font-family:'Instrument Serif',serif;font-size:32px;line-height:1.05;margin-bottom:3px;}
+.screen-title em{font-style:italic;color:var(--accent);}
+.screen-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Syne',sans-serif;}
+.pill{display:inline-flex;align-items:center;gap:5px;background:rgba(100,255,180,0.08);border:1px solid rgba(100,255,180,0.15);border-radius:100px;padding:4px 11px;font-size:10px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.06em;}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pdot 2s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:12px;}
+.section-divider{height:1px;background:var(--border);margin:16px 20px;}
+
+/* ════════════════════════════════════
+   HOME SCREEN
+════════════════════════════════════ */
+.home-hero{padding:14px 20px 0;}
+.home-greeting{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.home-title{font-family:'Instrument Serif',serif;font-size:34px;line-height:1.06;margin-bottom:12px;}
+.home-title em{font-style:italic;color:var(--accent);}
+.streak-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.streak-badge{background:rgba(255,209,102,0.1);border:1px solid rgba(255,209,102,0.2);border-radius:100px;padding:5px 13px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);}
+
+/* Score ring card */
+.score-ring-card{margin:0 20px 12px;background:linear-gradient(135deg,var(--surface),rgba(100,255,180,0.04));border:1px solid rgba(100,255,180,0.15);border-radius:24px;padding:16px 18px;}
+.rings-row{display:flex;align-items:center;gap:20px;}
+.ring-wrap{position:relative;width:108px;height:108px;flex-shrink:0;}
+.ring-svg{width:108px;height:108px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(100,255,180,0.07);stroke-width:9;}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;stroke-dasharray:276;stroke-dashoffset:62;transition:stroke-dashoffset 1.5s cubic-bezier(0.25,0.46,0.45,0.94);filter:drop-shadow(0 0 6px rgba(100,255,180,0.5));}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+.ring-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-family:'Syne',sans-serif;font-weight:600;}
+.pillars-col{flex:1;display:flex;flex-direction:column;gap:9px;}
+.pillar-row{display:flex;align-items:center;gap:8px;}
+.p-name{font-size:10px;font-family:'Syne',sans-serif;color:var(--text-muted);width:38px;}
+.p-track{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;}
+.p-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+.p-val{font-size:10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-dim);width:24px;text-align:right;}
+.score-footer{display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.sf-item{text-align:center;}
+.sf-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.sf-lbl{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:1px;}
+
+/* Stat chips */
+.stat-scroll{display:flex;gap:9px;padding:2px 20px 12px;overflow-x:auto;overflow-y:visible;}
+.stat-scroll::-webkit-scrollbar{display:none;}
+.stat-chip{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:10px 12px;min-width:76px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.stat-chip:active{transform:scale(0.95);}
+.sc-icon{font-size:18px;margin-bottom:4px;}
+.sc-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:1px;}
+.sc-lbl{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+
+/* Coach banner — compact single-line */
+.coach-banner{margin:0 20px 12px;background:rgba(100,255,180,0.07);border:1px solid rgba(100,255,180,0.18);border-radius:16px;padding:12px 14px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.coach-banner:active{transform:scale(0.98);}
+.cb-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.cb-avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(100,255,180,0.25),rgba(100,255,180,0.08));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.cb-label{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:3px;}
+.cb-msg{font-size:12px;color:rgba(232,240,254,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cb-arrow{font-size:14px;color:var(--accent);flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700;}
+
+/* Habits */
+.habits-section{padding:0 20px;}
+.habits-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.add-btn{width:26px;height:26px;border-radius:50%;background:rgba(100,255,180,0.1);border:1px solid rgba(100,255,180,0.2);color:var(--accent);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+.add-btn:active{transform:scale(0.88);}
+.habit-item{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:13px 15px;margin-bottom:9px;cursor:pointer;transition:all 0.3s;-webkit-user-select:none;user-select:none;}
+.habit-item:active{transform:scale(0.97);}
+.habit-item.done{background:rgba(100,255,180,0.05);border-color:rgba(100,255,180,0.15);}
+.hcheck{width:25px;height:25px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.habit-item.done .hcheck{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.h-info{flex:1;}
+.h-name{font-size:13px;font-weight:500;color:rgba(232,240,254,0.85);transition:all 0.3s;}
+.habit-item.done .h-name{color:var(--text-muted);text-decoration:line-through;}
+.h-meta{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.habit-item.done .h-meta{color:var(--accent);opacity:0.7;}
+
+/* Quick nutrition preview */
+.nutrition-preview{margin:0 20px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px 18px;cursor:pointer;transition:all 0.2s;}
+.nutrition-preview:active{transform:scale(0.98);}
+.np-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.np-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);}
+.np-cals{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);}
+.np-bars{display:flex;flex-direction:column;gap:7px;}
+.np-bar-row{display:flex;align-items:center;gap:8px;}
+.np-bar-lbl{font-size:10px;font-family:'Syne',sans-serif;width:36px;color:var(--text-muted);}
+.np-track{flex:1;height:4px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;}
+.np-fill{height:100%;border-radius:10px;}
+.np-val{font-size:10px;font-family:'Syne',sans-serif;font-weight:600;color:var(--text-muted);width:32px;text-align:right;}
+
+/* ════════════════════════════════════
+   COACH SCREEN
+════════════════════════════════════ */
+.coach-screen-wrap{height:100%;display:flex;flex-direction:column;overflow:hidden;}
+.mood-bar{display:flex;gap:7px;padding:0 20px 10px;overflow-x:auto;flex-shrink:0;}
+.mood-bar::-webkit-scrollbar{display:none;}
+.mood-chip{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:7px 14px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif;white-space:nowrap;}
+.mood-chip.sel{background:rgba(100,255,180,0.12);border-color:rgba(100,255,180,0.35);color:var(--accent);}
+.mood-chip:active{transform:scale(0.93);}
+.chat-msgs{flex:1;overflow-y:auto;padding:10px 20px;display:flex;flex-direction:column;gap:11px;-webkit-overflow-scrolling:touch;}
+.chat-msgs::-webkit-scrollbar{display:none;}
+.msg{display:flex;flex-direction:column;max-width:86%;animation:msgPop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes msgPop{from{opacity:0;transform:scale(0.92) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.msg.ai{align-self:flex-start;}
+.msg.user{align-self:flex-end;}
+.bubble{padding:11px 15px;border-radius:18px;font-size:13px;line-height:1.7;}
+.msg.ai .bubble{background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px;color:rgba(232,240,254,0.85);}
+.msg.user .bubble{background:var(--accent);color:var(--bg);border-bottom-right-radius:4px;font-weight:500;}
+.msg-time{font-size:9px;color:var(--text-muted);margin-top:3px;padding:0 4px;font-family:'Syne',sans-serif;}
+.msg.user .msg-time{text-align:right;}
+.typing{display:flex;gap:4px;align-items:center;padding:12px 15px;background:var(--surface2);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:4px;width:fit-content;}
+.td{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:0.5;animation:tb 1.2s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:0.2s;}.td:nth-child(3){animation-delay:0.4s;}
+@keyframes tb{0%,80%,100%{transform:translateY(0);opacity:0.5;}40%{transform:translateY(-6px);opacity:1;}}
+.quick-row{display:flex;gap:7px;padding:7px 20px;overflow-x:auto;flex-shrink:0;}
+.quick-row::-webkit-scrollbar{display:none;}
+.q-chip{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:7px 13px;font-size:11px;color:var(--text-dim);cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif;white-space:nowrap;}
+.q-chip:active{background:rgba(100,255,180,0.1);border-color:rgba(100,255,180,0.25);transform:scale(0.95);}
+.input-row{display:flex;gap:9px;padding:8px 20px 4px;flex-shrink:0;align-items:flex-end;}
+.msg-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:11px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none;max-height:96px;min-height:42px;transition:border-color 0.2s;-webkit-appearance:none;}
+.msg-input:focus{border-color:rgba(100,255,180,0.4);}
+.msg-input::placeholder{color:var(--text-muted);}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--accent);border:none;color:var(--bg);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;font-weight:700;}
+.send-btn:active{transform:scale(0.9);}
+.send-btn:disabled{background:rgba(100,255,180,0.2);}
+
+/* ════════════════════════════════════
+   FITNESS SCREEN
+════════════════════════════════════ */
+.type-grid{display:flex;flex-direction:column;gap:9px;padding:0 20px;margin-bottom:18px;}
+.type-card{border-radius:18px;border:1.5px solid var(--border);cursor:pointer;overflow:hidden;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
+.type-card:active{transform:scale(0.97);}
+.type-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px rgba(100,255,180,0.15),0 6px 24px rgba(100,255,180,0.08);}
+.type-inner{display:flex;align-items:stretch;}
+.type-icon-wrap{width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:32px;background:var(--surface2);border-right:1px solid var(--border);padding:18px 0;transition:background 0.3s;}
+.type-card.selected .type-icon-wrap{background:rgba(100,255,180,0.07);}
+.type-body{flex:1;padding:15px 14px;background:var(--surface);transition:background 0.3s;}
+.type-card.selected .type-body{background:rgba(100,255,180,0.03);}
+.type-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;transition:color 0.2s;}
+.type-card.selected .type-name{color:var(--accent);}
+.type-desc{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.type-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.ttag{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.05em;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:var(--text-muted);}
+.type-card.selected .ttag{background:rgba(100,255,180,0.08);border-color:rgba(100,255,180,0.18);color:var(--accent);}
+.type-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.type-card.selected .type-check{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+
+/* Split section */
+.split-sec{padding:0 20px 18px;overflow:hidden;max-height:0;opacity:0;transition:max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94),opacity 0.4s ease;}
+.split-sec.vis{max-height:600px;opacity:1;}
+.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+.split-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:14px 12px;cursor:pointer;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;}
+.split-card:active{transform:scale(0.95);}
+.split-card.selected{border-color:var(--gold);background:rgba(255,209,102,0.04);}
+.split-icon{font-size:24px;margin-bottom:8px;display:block;}
+.split-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;transition:color 0.2s;}
+.split-card.selected .split-name{color:var(--gold);}
+.split-detail{font-size:10px;color:var(--text-dim);line-height:1.45;}
+.split-badge{display:inline-block;margin-top:7px;font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-muted);}
+.split-card.selected .split-badge{background:rgba(255,209,102,0.1);border-color:rgba(255,209,102,0.22);color:var(--gold);}
+.split-check{position:absolute;top:9px;right:9px;width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:8px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.split-card.selected .split-check{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+.split-card.full{grid-column:1/-1;display:flex;gap:13px;align-items:center;padding:12px 14px;}
+.split-card.full .split-icon{font-size:26px;margin:0;flex-shrink:0;}
+
+/* Level */
+.level-sec{padding:0 20px 18px;max-height:0;opacity:0;overflow:hidden;transition:max-height 0.5s ease,opacity 0.4s ease;}
+.level-sec.vis{max-height:200px;opacity:1;}
+.level-row{display:flex;gap:8px;}
+.lvl-btn{flex:1;padding:13px 8px;text-align:center;background:var(--surface);border:1.5px solid var(--border);border-radius:15px;cursor:pointer;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+.lvl-btn:active{transform:scale(0.95);}
+.lvl-btn.selected{border-color:var(--blue);background:rgba(116,185,255,0.05);}
+.lvl-emoji{font-size:22px;margin-bottom:5px;display:block;}
+.lvl-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;transition:color 0.2s;}
+.lvl-btn.selected .lvl-name{color:var(--blue);}
+.lvl-sub{font-size:9px;color:var(--text-muted);}
+
+/* Gen button */
+.gen-sec{padding:0 20px 18px;max-height:0;opacity:0;overflow:hidden;transition:max-height 0.5s ease,opacity 0.4s ease;}
+.gen-sec.vis{max-height:200px;opacity:1;}
+.sum-row{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:7px;}
+.sum-chip{font-size:10px;font-family:'Syne',sans-serif;font-weight:700;padding:3px 10px;border-radius:100px;}
+.sum-a{background:rgba(100,255,180,0.1);border:1px solid rgba(100,255,180,0.2);color:var(--accent);}
+.sum-g{background:rgba(255,209,102,0.1);border:1px solid rgba(255,209,102,0.2);color:var(--gold);}
+.sum-b{background:rgba(116,185,255,0.1);border:1px solid rgba(116,185,255,0.2);color:var(--blue);}
+.gen-btn{width:100%;padding:15px;background:var(--accent);color:var(--bg);border:none;border-radius:100px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.gen-btn:active{transform:scale(0.97);background:#4de8a0;}
+.gen-btn:disabled{background:rgba(100,255,180,0.2);color:rgba(100,255,180,0.4);cursor:default;transform:none;}
+
+/* Workout result */
+.workout-result{padding:0 20px 20px;max-height:0;opacity:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(0.25,0.46,0.45,0.94),opacity 0.5s ease;}
+.workout-result.vis{max-height:2000px;opacity:1;}
+.wh-card{border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#0f2018,#1c3828);border:1px solid rgba(100,255,180,0.18);padding:22px 20px;margin-bottom:14px;position:relative;}
+.wh-glow{position:absolute;top:-70px;right:-70px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(100,255,180,0.1) 0%,transparent 65%);pointer-events:none;}
+.wh-ai-tag{display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pdot 2s infinite;}
+.ai-tag-txt{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);}
+.wh-title{font-family:'Instrument Serif',serif;font-size:27px;margin-bottom:4px;}
+.wh-meta-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.wh-meta-chip{font-size:10px;font-family:'Syne',sans-serif;font-weight:600;color:rgba(232,240,254,0.45);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);border-radius:100px;padding:3px 9px;}
+.start-btn{background:var(--accent);color:var(--bg);border:none;padding:11px 24px;border-radius:100px;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s;}
+.start-btn:active{transform:scale(0.96);}
+.coach-note{background:rgba(100,255,180,0.06);border:1px solid rgba(100,255,180,0.14);border-radius:15px;padding:13px 15px;margin-bottom:14px;display:flex;gap:11px;align-items:flex-start;}
+.cn-note-avatar{width:30px;height:30px;border-radius:9px;background:rgba(100,255,180,0.14);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.cn-note-lbl{font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+.cn-note-txt{font-size:12px;line-height:1.65;color:rgba(232,240,254,0.7);}
+.ex-list-lbl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+.ex-num{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(100,255,180,0.18);display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);flex-shrink:0;}
+.ex-info{flex:1;}
+.ex-name{font-size:13px;color:var(--text);font-weight:500;}
+.ex-target{font-size:10px;color:var(--text-muted);margin-top:1px;font-family:'Syne',sans-serif;}
+.ex-sets{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;}
+.ex-card.rest-card{background:rgba(255,209,102,0.03);border-color:rgba(255,209,102,0.09);}
+.ex-card.rest-card .ex-num{border-color:rgba(255,209,102,0.18);color:var(--gold);}
+.ex-card.rest-card .ex-sets{color:var(--gold);}
+.rebuild-btn{width:100%;padding:12px;background:transparent;border:1.5px solid rgba(100,255,180,0.18);border-radius:100px;color:var(--accent);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;cursor:pointer;margin-top:4px;transition:all 0.2s;}
+.rebuild-btn:active{background:rgba(100,255,180,0.07);transform:scale(0.97);}
+.gen-spinner-wrap{display:none;flex-direction:column;align-items:center;gap:14px;padding:36px 20px;}
+.gen-spinner-wrap.show{display:flex;}
+.g-spinner{width:36px;height:36px;border-radius:50%;border:2.5px solid rgba(100,255,180,0.1);border-top-color:var(--accent);animation:spin 0.75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.g-spinner-txt{font-size:12px;color:var(--text-muted);font-family:'Syne',sans-serif;letter-spacing:0.1em;text-align:center;}
+
+/* ════════════════════════════════════
+   NUTRITION SCREEN
+════════════════════════════════════ */
+.nutr-tabs{display:flex;padding:0 20px;gap:4px;margin-bottom:2px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.ntab{flex:1;padding:9px 4px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:none;border:none;cursor:pointer;position:relative;transition:color 0.2s;}
+.ntab.active{color:var(--accent);}
+.ntab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent);border-radius:2px;}
+.nview{display:none;}
+.nview.active{display:block;}
+
+/* Macro ring */
+.macro-ring-card{margin:0 20px 12px;background:linear-gradient(135deg,var(--surface),rgba(100,255,180,0.04));border:1px solid rgba(100,255,180,0.12);border-radius:22px;padding:20px 17px;}
+.mr-row{display:flex;align-items:center;gap:18px;}
+.mr-ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0;}
+.mr-svg{width:110px;height:110px;transform:rotate(-90deg);}
+.mr-bg{fill:none;stroke:rgba(100,255,180,0.07);stroke-width:10;}
+.mr-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(0.25,0.46,0.45,0.94);}
+.mr-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.mr-cal{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1;}
+.mr-cal-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-family:'Syne',sans-serif;margin-top:1px;}
+.mr-rem{font-size:9px;color:var(--text-muted);margin-top:1px;}
+.macro-bars-col{flex:1;display:flex;flex-direction:column;gap:10px;}
+.mb-row{display:flex;flex-direction:column;gap:3px;}
+.mb-top{display:flex;justify-content:space-between;align-items:center;}
+.mb-name{font-size:10px;font-family:'Syne',sans-serif;font-weight:700;}
+.mb-vals{font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif;}
+.mb-track{height:4px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;}
+.mb-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+.mr-footer{display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.mrf-item{text-align:center;}
+.mrf-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.mrf-lbl{font-size:8px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-top:1px;}
+
+/* Log btns */
+.log-btns{margin:0 20px 12px;display:flex;gap:9px;}
+.log-btn{flex:1;padding:13px;border-radius:15px;border:none;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.log-btn:active{transform:scale(0.96);}
+.log-btn-primary{background:var(--accent);color:var(--bg);}
+.log-btn-secondary{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border);}
+
+/* Nutrition insight */
+.nutr-insight{margin:0 20px 12px;background:rgba(100,255,180,0.06);border:1px solid rgba(100,255,180,0.14);border-radius:17px;padding:14px 15px;display:flex;gap:11px;}
+.ni-av{width:32px;height:32px;border-radius:10px;background:rgba(100,255,180,0.12);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ni-lbl{font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+.ni-txt{font-size:12px;line-height:1.65;color:rgba(232,240,254,0.7);}
+
+/* Meals */
+.meals-wrap{padding:0 20px;}
+.meal-group{margin-bottom:14px;}
+.meal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.meal-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);}
+.meal-cals-txt{font-size:10px;color:var(--text-muted);font-family:'Syne',sans-serif;}
+.meal-add{width:22px;height:22px;border-radius:50%;background:rgba(100,255,180,0.08);border:1px solid rgba(100,255,180,0.15);color:var(--accent);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+.meal-add:active{transform:scale(0.88);}
+.food-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px;margin-bottom:7px;cursor:pointer;transition:all 0.2s;}
+.food-item:active{transform:scale(0.98);}
+.food-icon{width:34px;height:34px;border-radius:9px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.food-info{flex:1;}
+.food-name{font-size:12px;font-weight:500;color:var(--text);}
+.food-serving{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.food-macros{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;}
+.fm-chip{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;padding:1px 6px;border-radius:100px;}
+.fm-cal{background:rgba(100,255,180,0.07);color:var(--accent);}
+.fm-p{background:rgba(116,185,255,0.07);color:var(--blue);}
+.fm-c{background:rgba(255,209,102,0.07);color:var(--gold);}
+.fm-f{background:rgba(255,107,107,0.07);color:var(--red);}
+.food-del{color:var(--text-muted);font-size:15px;padding:3px;cursor:pointer;opacity:0.5;transition:opacity 0.2s;}
+.food-del:active{opacity:1;color:var(--red);}
+.empty-meal{padding:10px 13px;border:1px dashed rgba(255,255,255,0.05);border-radius:13px;text-align:center;font-size:11px;color:var(--text-muted);}
+
+/* Plan tab */
+.goal-cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 20px 14px;}
+.goal-card{background:var(--surface);border:1.5px solid var(--border);border-radius:17px;padding:14px 12px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.goal-card:active{transform:scale(0.96);}
+.goal-card.active{border-color:var(--accent);background:rgba(100,255,180,0.04);}
+.gc-icon{font-size:26px;margin-bottom:8px;display:block;}
+.gc-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px;transition:color 0.2s;}
+.goal-card.active .gc-name{color:var(--accent);}
+.gc-desc{font-size:9px;color:var(--text-muted);line-height:1.45;}
+.gc-check{position:absolute;top:9px;right:9px;width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:8px;transition:all 0.2s;}
+.goal-card.active .gc-check{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+.macro-targets{padding:0 20px 14px;}
+.mt-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;}
+.mt-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+.mt-row{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
+.mt-label{font-size:12px;font-weight:500;width:64px;flex-shrink:0;}
+.mt-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:10px;outline:none;cursor:pointer;}
+.mt-slider::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px rgba(100,255,180,0.4);}
+.mt-val{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;width:52px;text-align:right;}
+.wisdom-cards{padding:0 20px 14px;}
+.wisdom-card{background:linear-gradient(135deg,rgba(100,255,180,0.06),rgba(100,255,180,0.02));border:1px solid rgba(100,255,180,0.13);border-radius:17px;padding:16px;margin-bottom:9px;}
+.w-tag{font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.w-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);}
+.w-title{font-family:'Instrument Serif',serif;font-size:16px;margin-bottom:5px;}
+.w-body{font-size:11px;line-height:1.75;color:rgba(232,240,254,0.62);}
+
+/* ════════════════════════════════════
+   LOG FOOD MODAL
+════════════════════════════════════ */
+.modal{position:absolute;inset:0;background:rgba(6,10,13,0.94);z-index:80;display:none;flex-direction:column;border-radius:52px;overflow:hidden;backdrop-filter:blur(10px);}
+.modal.show{display:flex;animation:modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes modalIn{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;flex-shrink:0;}
+.modal-title{font-family:'Instrument Serif',serif;font-size:22px;}
+.modal-title em{font-style:italic;color:var(--accent);}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+.modal-close:active{transform:scale(0.9);}
+.log-method-tabs{display:flex;gap:6px;padding:0 22px 12px;flex-shrink:0;}
+.lmt{flex:1;padding:9px 6px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;text-align:center;transition:all 0.2s;}
+.lmt.active{background:rgba(100,255,180,0.1);border-color:rgba(100,255,180,0.28);color:var(--accent);}
+.lmt:active{transform:scale(0.96);}
+.lmt-icon{font-size:17px;display:block;margin-bottom:3px;}
+.meal-sel-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 22px 12px;flex-shrink:0;}
+.msb{padding:7px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);cursor:pointer;text-align:center;transition:all 0.2s;}
+.msb.sel{background:rgba(100,255,180,0.1);border-color:rgba(100,255,180,0.22);color:var(--accent);}
+.msb:active{transform:scale(0.95);}
+.modal-content{flex:1;overflow-y:auto;padding:0 22px 20px;}
+.modal-content::-webkit-scrollbar{display:none;}
+.search-bar{display:flex;gap:9px;margin-bottom:12px;position:sticky;top:0;z-index:5;padding:4px 0;background:var(--bg);}
+.search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:rgba(100,255,180,0.35);}
+.search-input::placeholder{color:var(--text-muted);}
+.search-go{width:42px;height:42px;border-radius:13px;background:var(--accent);border:none;color:var(--bg);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.search-go:active{transform:scale(0.93);}
+.search-spinner-wrap{text-align:center;padding:28px;display:none;}
+.search-spinner{width:26px;height:26px;border-radius:50%;border:2px solid rgba(100,255,180,0.1);border-top-color:var(--accent);animation:spin 0.75s linear infinite;margin:0 auto 10px;}
+.search-results{display:flex;flex-direction:column;gap:7px;}
+.result-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px;cursor:pointer;transition:all 0.2s;}
+.result-item:active{transform:scale(0.97);background:rgba(100,255,180,0.04);}
+.ri-name{font-size:13px;font-weight:500;margin-bottom:2px;}
+.ri-brand{font-size:10px;color:var(--text-muted);margin-bottom:7px;font-family:'Syne',sans-serif;}
+.ri-macros{display:flex;gap:5px;flex-wrap:wrap;}
+.no-results{text-align:center;padding:36px 18px;color:var(--text-muted);font-size:12px;line-height:1.7;}
+/* Add food panel */
+.add-panel{background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:16px;margin-top:12px;display:none;}
+.add-panel.show{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.ap-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;}
+.ap-sub{font-size:10px;color:var(--text-muted);margin-bottom:12px;}
+.ap-macro-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.ap-macro{background:var(--surface2);border-radius:11px;padding:11px;text-align:center;}
+.ap-m-val{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:2px;}
+.ap-m-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);}
+.ap-serving-row{display:flex;gap:9px;align-items:center;margin-bottom:12px;}
+.ap-serving-lbl{font-size:11px;color:var(--text-dim);white-space:nowrap;}
+.ap-serving-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;text-align:center;}
+.ap-serving-unit{font-size:11px;color:var(--text-muted);}
+.ap-confirm-btn{width:100%;padding:13px;background:var(--accent);color:var(--bg);border:none;border-radius:100px;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.07em;cursor:pointer;transition:all 0.2s;}
+.ap-confirm-btn:active{transform:scale(0.97);}
+/* Photo */
+.photo-zone{border:1.5px dashed rgba(100,255,180,0.18);border-radius:18px;padding:28px 18px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:12px;}
+.photo-zone:active{background:rgba(100,255,180,0.04);}
+.pz-icon{font-size:44px;margin-bottom:12px;display:block;}
+.pz-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:5px;}
+.pz-sub{font-size:11px;color:var(--text-muted);line-height:1.6;}
+.photo-preview{width:100%;border-radius:16px;overflow:hidden;margin-bottom:12px;display:none;}
+.photo-preview img{width:100%;display:block;}
+.ai-analyzing{display:none;flex-direction:column;align-items:center;gap:11px;padding:28px;}
+.ai-analyzing.show{display:flex;}
+.an-spinner{width:34px;height:34px;border-radius:50%;border:2.5px solid rgba(100,255,180,0.1);border-top-color:var(--accent);animation:spin 0.75s linear infinite;}
+.an-txt{font-size:12px;color:var(--text-muted);font-family:'Syne',sans-serif;letter-spacing:0.08em;text-align:center;}
+
+/* ── TOAST ── */
+.toast{position:absolute;bottom:76px;left:18px;right:18px;background:var(--surface2);border:1px solid rgba(100,255,180,0.18);border-radius:15px;padding:11px 14px;z-index:100;display:flex;gap:9px;align-items:flex-start;transform:translateY(14px);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;pointer-events:auto;}
+.toast-lbl{font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:2px;}
+.toast-msg{font-size:11px;line-height:1.55;color:rgba(232,240,254,0.7);}
+.toast-x{margin-left:auto;color:var(--text-muted);cursor:pointer;padding-left:7px;font-size:15px;flex-shrink:0;}
+
+/* ── INSTALL BANNER ── */
+.install-banner{position:absolute;top:0;left:0;right:0;z-index:200;background:var(--accent);color:var(--bg);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;transform:translateY(-100%);transition:transform 0.4s ease;border-radius:52px 52px 0 0;}
+.install-banner.show{transform:translateY(0);}
+.ib-btn{background:var(--bg);color:var(--accent);border:none;padding:5px 14px;border-radius:100px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.ib-close{background:none;border:none;font-size:17px;color:var(--bg);cursor:pointer;opacity:0.6;}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+  <div class="install-banner" id="installBanner">
+    <span>📲 Install Risn on your home screen</span>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button class="ib-btn" id="installBtn">Install</button>
+      <button class="ib-close" onclick="document.getElementById('installBanner').classList.remove('show')">×</button>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status"><span id="clk">9:41</span><span>●●●● 🔋</span></div>
+
+  <!-- Screens -->
+  <div class="screens">
+
+    <!-- ══════════════════ HOME ══════════════════ -->
+    <div class="screen active" id="s-home">
+      <div class="home-hero">
+        <div class="home-greeting">Welcome back</div>
+        <div class="home-title">Ready to<br><em>rise today?</em></div>
+        <div class="streak-row">
+          <div class="streak-badge">🔥 14-day streak</div>
+          <div class="pill"><div class="pill-dot"></div>Live score</div>
+        </div>
+      </div>
+
+      <!-- Risn Score -->
+      <div class="score-ring-card">
+        <div class="rings-row">
+          <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="44"/>
+              <circle class="ring-fill" cx="50" cy="50" r="44"/>
+            </svg>
+            <div class="ring-center"><div class="ring-num">82</div><div class="ring-lbl">Risn Score</div></div>
+          </div>
+          <div class="pillars-col">
+            <div class="pillar-row"><div class="p-name">Mind</div><div class="p-track"><div class="p-fill" style="width:88%;background:var(--accent)"></div></div><div class="p-val">88</div></div>
+            <div class="pillar-row"><div class="p-name">Body</div><div class="p-track"><div class="p-fill" style="width:76%;background:var(--gold)"></div></div><div class="p-val">76</div></div>
+            <div class="pillar-row"><div class="p-name">Habit</div><div class="p-track"><div class="p-fill" style="width:91%;background:var(--accent)"></div></div><div class="p-val">91</div></div>
+            <div class="pillar-row"><div class="p-name">Nutr.</div><div class="p-track"><div class="p-fill" style="width:79%;background:var(--orange)"></div></div><div class="p-val">79</div></div>
+            <div class="pillar-row"><div class="p-name">Rest</div><div class="p-track"><div class="p-fill" style="width:73%;background:var(--blue)"></div></div><div class="p-val">73</div></div>
+          </div>
+        </div>
+        <div class="score-footer">
+          <div class="sf-item"><div class="sf-val" style="color:var(--accent)">↑ +4</div><div class="sf-lbl">Today</div></div>
+          <div class="sf-item"><div class="sf-val" style="color:var(--gold)">🔥 14</div><div class="sf-lbl">Streak</div></div>
+          <div class="sf-item"><div class="sf-val" style="color:var(--blue)">78</div><div class="sf-lbl">Avg Week</div></div>
+          <div class="sf-item"><div class="sf-val" style="color:var(--orange)">1,840</div><div class="sf-lbl">Calories</div></div>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="stat-scroll">
+        <div class="stat-chip" onclick="switchTab('nutrition')"><div class="sc-icon">💧</div><div class="sc-val">6/8</div><div class="sc-lbl">Hydration</div></div>
+        <div class="stat-chip" onclick="switchTab('home')"><div class="sc-icon">😴</div><div class="sc-val">7h20</div><div class="sc-lbl">Sleep</div></div>
+        <div class="stat-chip" onclick="switchTab('fitness')"><div class="sc-icon">🚶</div><div class="sc-val">6.2k</div><div class="sc-lbl">Steps</div></div>
+        <div class="stat-chip" onclick="switchTab('nutrition')"><div class="sc-icon">🍽️</div><div class="sc-val">1,840</div><div class="sc-lbl">Calories</div></div>
+        <div class="stat-chip" onclick="switchTab('coach')"><div class="sc-icon">🧘</div><div class="sc-val">10m</div><div class="sc-lbl">Mindful</div></div>
+      </div>
+
+      <!-- Coach banner — compact, tap to open coach -->
+      <div class="coach-banner" onclick="switchTab('coach')">
+        <div class="cb-left">
+          <div class="cb-avatar">🤖</div>
+          <div>
+            <div class="cb-label">✦ AI Coach · New message</div>
+            <div class="cb-msg">"Great sleep — high energy day. Push hard and nail your protein."</div>
+          </div>
+        </div>
+        <div class="cb-arrow">→</div>
+      </div>
+
+      <!-- Nutrition preview -->
+      <div class="nutrition-preview" onclick="switchTab('nutrition')">
+        <div class="np-header">
+          <div class="np-title">🍎 Today's Nutrition</div>
+          <div class="np-cals">1,840 / 2,300 kcal</div>
+        </div>
+        <div class="np-bars">
+          <div class="np-bar-row"><div class="np-bar-lbl" style="color:var(--blue)">Protein</div><div class="np-track"><div class="np-fill" style="width:71%;background:var(--blue)"></div></div><div class="np-val">142/200g</div></div>
+          <div class="np-bar-row"><div class="np-bar-lbl" style="color:var(--gold)">Carbs</div><div class="np-track"><div class="np-fill" style="width:79%;background:var(--gold)"></div></div><div class="np-val">220/280g</div></div>
+          <div class="np-bar-row"><div class="np-bar-lbl" style="color:var(--red)">Fat</div><div class="np-track"><div class="np-fill" style="width:73%;background:var(--red)"></div></div><div class="np-val">58/80g</div></div>
+        </div>
+      </div>
+
+      <!-- Habits -->
+      <div class="habits-section">
+        <div class="habits-header">
+          <div class="slabel" style="margin:0">Today's Habits</div>
+          <div class="add-btn">+</div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="habit-item done" onclick="toggleHabit(this)"><div class="hcheck">✓</div><div class="h-info"><div class="h-name">Morning Meditation</div><div class="h-meta">🔥 14-day streak · Done 7:12 AM</div></div></div>
+        <div class="habit-item done" onclick="toggleHabit(this)"><div class="hcheck">✓</div><div class="h-info"><div class="h-name">Gratitude Journal</div><div class="h-meta">🔥 9-day streak · Done 7:30 AM</div></div></div>
+        <div class="habit-item" onclick="toggleHabit(this)"><div class="hcheck"></div><div class="h-info"><div class="h-name">Afternoon Walk</div><div class="h-meta">6-day streak · Not yet</div></div></div>
+        <div class="habit-item" onclick="toggleHabit(this)"><div class="hcheck"></div><div class="h-info"><div class="h-name">Read 20 Minutes</div><div class="h-meta">11-day streak · Not yet</div></div></div>
+        <div class="habit-item" onclick="toggleHabit(this)"><div class="hcheck"></div><div class="h-info"><div class="h-name">No Phone After 9PM</div><div class="h-meta">3-day streak · Not yet</div></div></div>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- ══════════════════ COACH ══════════════════ -->
+    <div class="screen" id="s-coach">
+      <div class="coach-screen-wrap">
+        <div class="screen-header" style="flex-shrink:0">
+          <div class="screen-title">AI <em>Coach</em></div>
+          <div class="screen-sub">Personalized · Always here</div>
+        </div>
+        <div class="mood-bar">
+          <div class="mood-chip" onclick="pickMood(this,'great')">😄 Great</div>
+          <div class="mood-chip" onclick="pickMood(this,'good')">🙂 Good</div>
+          <div class="mood-chip" onclick="pickMood(this,'okay')">😐 Okay</div>
+          <div class="mood-chip" onclick="pickMood(this,'low')">😔 Low</div>
+          <div class="mood-chip" onclick="pickMood(this,'stressed')">😤 Stressed</div>
+          <div class="mood-chip" onclick="pickMood(this,'anxious')">😰 Anxious</div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="msg ai"><div class="bubble">Hey — I'm your Risn coach. I'm here every day to help you rise. How are you feeling right now? 🌿</div><div class="msg-time">Now</div></div>
+        </div>
+        <div class="quick-row" id="quickRow">
+          <div class="q-chip" onclick="sendQuick('Help me manage my anxiety right now')">😰 Anxiety</div>
+          <div class="q-chip" onclick="sendQuick('I need a motivation boost')">⚡ Motivation</div>
+          <div class="q-chip" onclick="sendQuick('Workout advice for today')">💪 Workout</div>
+          <div class="q-chip" onclick="sendQuick('Help me wind down tonight')">🌙 Wind down</div>
+          <div class="q-chip" onclick="sendQuick('What should I focus on today?')">🎯 Focus</div>
+        </div>
+        <div class="input-row">
+          <textarea class="msg-input" id="msgInput" placeholder="Talk to your coach..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMsg()">↑</button>
+        </div>
+        <div style="height:6px;flex-shrink:0"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FITNESS ══════════════════ -->
+    <div class="screen" id="s-fitness">
+      <div class="screen-header">
+        <div class="screen-title">Build Your <em>Workout</em></div>
+        <div class="screen-sub">Choose your style — Risn AI does the rest</div>
+      </div>
+
+      <div class="slabel pad">Step 1 · Your Style</div>
+      <div class="type-grid">
+        <div class="type-card" id="type-weights" onclick="selType('weights')">
+          <div class="type-check" id="tc-weights"></div>
+          <div class="type-inner">
+            <div class="type-icon-wrap">🏋️</div>
+            <div class="type-body"><div class="type-name">Old-School Weights</div><div class="type-desc">Barbells, dumbbells, machines. Classic iron with progressive overload.</div><div class="type-tags"><span class="ttag">Barbells</span><span class="ttag">Dumbbells</span><span class="ttag">Machines</span></div></div>
+          </div>
+        </div>
+        <div class="type-card" id="type-calisthenics" onclick="selType('calisthenics')">
+          <div class="type-check" id="tc-calisthenics"></div>
+          <div class="type-inner">
+            <div class="type-icon-wrap">🤸</div>
+            <div class="type-body"><div class="type-name">Bodyweight / Calisthenics</div><div class="type-desc">Master your own body. No equipment. Functional strength and control.</div><div class="type-tags"><span class="ttag">No Equipment</span><span class="ttag">Pull-ups</span><span class="ttag">HIIT</span></div></div>
+          </div>
+        </div>
+        <div class="type-card" id="type-mix" onclick="selType('mix')">
+          <div class="type-check" id="tc-mix"></div>
+          <div class="type-inner">
+            <div class="type-icon-wrap">⚡</div>
+            <div class="type-body"><div class="type-name">Mix of Both</div><div class="type-desc">Iron and bodyweight blended for functional power and muscle.</div><div class="type-tags"><span class="ttag">Hybrid</span><span class="ttag">Functional</span><span class="ttag">Versatile</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split -->
+      <div class="split-sec" id="splitSec">
+        <div class="slabel" style="margin-bottom:10px">Step 2 · Your Split</div>
+        <div class="split-grid">
+          <div class="split-card" id="sp-ppl" onclick="selSplit('ppl')"><div class="split-check" id="sc-ppl"></div><span class="split-icon">🔄</span><div class="split-name">Push / Pull / Legs</div><div class="split-detail">3 days. Push, pull, then legs.</div><span class="split-badge">Intermediate</span></div>
+          <div class="split-card" id="sp-fullbody" onclick="selSplit('fullbody')"><div class="split-check" id="sc-fullbody"></div><span class="split-icon">💪</span><div class="split-name">Full Body</div><div class="split-detail">Hit everything each session. 3 days/week.</div><span class="split-badge">All Levels</span></div>
+          <div class="split-card" id="sp-upper-lower" onclick="selSplit('upper-lower')"><div class="split-check" id="sc-upper-lower"></div><span class="split-icon">↕️</span><div class="split-name">Upper / Lower</div><div class="split-detail">Alternate upper and lower body.</div><span class="split-badge">Intermediate</span></div>
+          <div class="split-card" id="sp-bro" onclick="selSplit('bro')"><div class="split-check" id="sc-bro"></div><span class="split-icon">🎯</span><div class="split-name">One Body Part</div><div class="split-detail">Max isolation per session. Classic bro split.</div><span class="split-badge">Advanced</span></div>
+          <div class="split-card full" id="sp-2day" onclick="selSplit('2day')"><div class="split-check" id="sc-2day"></div><span class="split-icon">✌️</span><div><div class="split-name">2-Body Part Split</div><div class="split-detail">Pair muscle groups (chest+tris, back+bis).</div><span class="split-badge">Advanced</span></div></div>
+        </div>
+      </div>
+
+      <!-- Level -->
+      <div class="level-sec" id="levelSec">
+        <div class="slabel" style="margin-bottom:10px">Step 3 · Experience Level</div>
+        <div class="level-row">
+          <div class="lvl-btn" id="lv-beginner" onclick="selLevel('beginner')"><span class="lvl-emoji">🌱</span><div class="lvl-name">Beginner</div><div class="lvl-sub">Under 1 yr</div></div>
+          <div class="lvl-btn" id="lv-intermediate" onclick="selLevel('intermediate')"><span class="lvl-emoji">🔥</span><div class="lvl-name">Intermediate</div><div class="lvl-sub">1–3 years</div></div>
+          <div class="lvl-btn" id="lv-advanced" onclick="selLevel('advanced')"><span class="lvl-emoji">⚡</span><div class="lvl-name">Advanced</div><div class="lvl-sub">3+ years</div></div>
+        </div>
+      </div>
+
+      <!-- Generate -->
+      <div class="gen-sec" id="genSec">
+        <div class="sum-row" id="sumRow"></div>
+        <button class="gen-btn" id="genBtn" onclick="generateWorkout()">Generate My Workout →</button>
+      </div>
+
+      <!-- Spinner -->
+      <div class="gen-spinner-wrap" id="genSpinner">
+        <div class="g-spinner"></div>
+        <div class="g-spinner-txt">Risn AI building<br>your perfect workout...</div>
+      </div>
+
+      <!-- Result -->
+      <div class="workout-result" id="workoutResult"></div>
+    </div>
+
+    <!-- ══════════════════ NUTRITION ══════════════════ -->
+    <div class="screen" id="s-nutrition">
+      <!-- Nutrition sub-tabs -->
+      <div class="nutr-tabs" style="flex-shrink:0">
+        <button class="ntab active" onclick="switchNutrTab('today',this)">Today</button>
+        <button class="ntab" onclick="switchNutrTab('plan',this)">My Plan</button>
+        <button class="ntab" onclick="switchNutrTab('insights',this)">Insights</button>
+      </div>
+
+      <!-- TODAY -->
+      <div class="nview active" id="nv-today">
+        <div style="padding:12px 20px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.07em">MON · MARCH 23</span>
+          <div class="pill" style="cursor:pointer" id="goalPill">🎯 Lean Bulk</div>
+        </div>
+        <div style="height:10px"></div>
+        <!-- Macro rings -->
+        <div class="macro-ring-card">
+          <div class="mr-row">
+            <div class="mr-ring-wrap">
+              <svg class="mr-svg" viewBox="0 0 100 100">
+                <circle class="mr-bg" cx="50" cy="50" r="44"/>
+                <circle class="mr-fill" cx="50" cy="50" r="44" stroke="var(--accent)" stroke-dasharray="276" stroke-dashoffset="97" id="calRing"/>
+              </svg>
+              <div class="mr-center"><div class="mr-cal" id="calConsumed">1,840</div><div class="mr-cal-lbl">calories</div><div class="mr-rem" id="calRem">460 left</div></div>
+            </div>
+            <div class="macro-bars-col">
+              <div class="mb-row"><div class="mb-top"><span class="mb-name" style="color:var(--blue)">Protein</span><span class="mb-vals" id="pVals">142 / 200g</span></div><div class="mb-track"><div class="mb-fill" id="pBar" style="width:71%;background:var(--blue)"></div></div></div>
+              <div class="mb-row"><div class="mb-top"><span class="mb-name" style="color:var(--gold)">Carbs</span><span class="mb-vals" id="cVals">220 / 280g</span></div><div class="mb-track"><div class="mb-fill" id="cBar" style="width:79%;background:var(--gold)"></div></div></div>
+              <div class="mb-row"><div class="mb-top"><span class="mb-name" style="color:var(--red)">Fat</span><span class="mb-vals" id="fVals">58 / 80g</span></div><div class="mb-track"><div class="mb-fill" id="fBar" style="width:73%;background:var(--red)"></div></div></div>
+              <div class="mb-row"><div class="mb-top"><span class="mb-name" style="color:var(--orange)">Fiber</span><span class="mb-vals" id="fibVals">22 / 35g</span></div><div class="mb-track"><div class="mb-fill" id="fibBar" style="width:63%;background:var(--orange)"></div></div></div>
+            </div>
+          </div>
+          <div class="mr-footer">
+            <div class="mrf-item"><div class="mrf-val" style="color:var(--accent)">2,300</div><div class="mrf-lbl">Goal</div></div>
+            <div class="mrf-item"><div class="mrf-val" style="color:var(--gold)" id="mrf-eaten">1,840</div><div class="mrf-lbl">Eaten</div></div>
+            <div class="mrf-item"><div class="mrf-val" style="color:var(--orange)">320</div><div class="mrf-lbl">Burned</div></div>
+            <div class="mrf-item"><div class="mrf-val" style="color:var(--blue)" id="mrf-rem">460</div><div class="mrf-lbl">Left</div></div>
+          </div>
+        </div>
+        <!-- AI insight -->
+        <div class="nutr-insight">
+          <div class="ni-av">🤖</div>
+          <div><div class="ni-lbl">✦ Nutrition Coach</div><div class="ni-txt">Protein is on track but carbs are behind. With leg day today, get those carbs in before training — it'll fuel performance significantly.</div></div>
+        </div>
+        <!-- Log buttons -->
+        <div class="log-btns">
+          <button class="log-btn log-btn-primary" onclick="openModal('search')">🔍 Search Food</button>
+          <button class="log-btn log-btn-secondary" onclick="openModal('photo')">📸 Photo Log</button>
+        </div>
+        <!-- Meals -->
+        <div class="meals-wrap">
+          <div class="meal-group" id="mg-breakfast">
+            <div class="meal-hdr"><span class="meal-title">☀️ Breakfast</span><span class="meal-cals-txt">620 kcal</span><div class="meal-add" onclick="openModalForMeal('search','breakfast')">+</div></div>
+            <div class="food-item"><div class="food-icon">🥚</div><div class="food-info"><div class="food-name">Whole Eggs (4 large)</div><div class="food-serving">240g</div><div class="food-macros"><span class="fm-chip fm-cal">280 kcal</span><span class="fm-chip fm-p">P:24g</span><span class="fm-chip fm-c">C:2g</span><span class="fm-chip fm-f">F:20g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+            <div class="food-item"><div class="food-icon">🌾</div><div class="food-info"><div class="food-name">Rolled Oats</div><div class="food-serving">80g dry</div><div class="food-macros"><span class="fm-chip fm-cal">300 kcal</span><span class="fm-chip fm-p">P:10g</span><span class="fm-chip fm-c">C:54g</span><span class="fm-chip fm-f">F:5g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+          </div>
+          <div class="meal-group" id="mg-lunch">
+            <div class="meal-hdr"><span class="meal-title">🌤 Lunch</span><span class="meal-cals-txt">680 kcal</span><div class="meal-add" onclick="openModalForMeal('search','lunch')">+</div></div>
+            <div class="food-item"><div class="food-icon">🍗</div><div class="food-info"><div class="food-name">Chicken Breast, Grilled</div><div class="food-serving">227g</div><div class="food-macros"><span class="fm-chip fm-cal">370 kcal</span><span class="fm-chip fm-p">P:70g</span><span class="fm-chip fm-c">C:0g</span><span class="fm-chip fm-f">F:8g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+            <div class="food-item"><div class="food-icon">🍚</div><div class="food-info"><div class="food-name">White Rice, Cooked</div><div class="food-serving">280g</div><div class="food-macros"><span class="fm-chip fm-cal">310 kcal</span><span class="fm-chip fm-p">P:6g</span><span class="fm-chip fm-c">C:68g</span><span class="fm-chip fm-f">F:1g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+          </div>
+          <div class="meal-group" id="mg-dinner">
+            <div class="meal-hdr"><span class="meal-title">🌙 Dinner</span><span class="meal-cals-txt">540 kcal</span><div class="meal-add" onclick="openModalForMeal('search','dinner')">+</div></div>
+            <div class="food-item"><div class="food-icon">🥩</div><div class="food-info"><div class="food-name">Ground Beef 90/10</div><div class="food-serving">170g</div><div class="food-macros"><span class="fm-chip fm-cal">320 kcal</span><span class="fm-chip fm-p">P:38g</span><span class="fm-chip fm-c">C:0g</span><span class="fm-chip fm-f">F:18g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+            <div class="food-item"><div class="food-icon">🥦</div><div class="food-info"><div class="food-name">Broccoli, Steamed</div><div class="food-serving">180g</div><div class="food-macros"><span class="fm-chip fm-cal">62 kcal</span><span class="fm-chip fm-p">P:5g</span><span class="fm-chip fm-c">C:12g</span><span class="fm-chip fm-f">F:0g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+          </div>
+          <div class="meal-group" id="mg-snacks">
+            <div class="meal-hdr"><span class="meal-title">🍎 Snacks</span><span class="meal-cals-txt" id="mc-snacks">0 kcal</span><div class="meal-add" onclick="openModalForMeal('search','snacks')">+</div></div>
+            <div class="empty-meal">No snacks logged yet — tap + to add</div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- PLAN -->
+      <div class="nview" id="nv-plan">
+        <div class="screen-header"><div class="screen-title">My <em>Plan</em></div><div class="screen-sub">Set your goal · Dial in your macros</div></div>
+        <div class="slabel pad">Your Goal</div>
+        <div class="goal-cards">
+          <div class="goal-card" id="gc-cut" onclick="selGoal('cut')"><div class="gc-check" id="gchk-cut"></div><span class="gc-icon">🔥</span><div class="gc-name">Cut</div><div class="gc-desc">Lose fat, keep muscle. Deficit + high protein.</div></div>
+          <div class="goal-card active" id="gc-bulk" onclick="selGoal('bulk')"><div class="gc-check" id="gchk-bulk">✓</div><span class="gc-icon">💪</span><div class="gc-name">Lean Bulk</div><div class="gc-desc">Build muscle, minimal fat. Slight surplus.</div></div>
+          <div class="goal-card" id="gc-maintain" onclick="selGoal('maintain')"><div class="gc-check" id="gchk-maintain"></div><span class="gc-icon">⚖️</span><div class="gc-name">Maintain</div><div class="gc-desc">Hold your physique. Performance focus.</div></div>
+          <div class="goal-card" id="gc-recomp" onclick="selGoal('recomp')"><div class="gc-check" id="gchk-recomp"></div><span class="gc-icon">⚡</span><div class="gc-name">Recomp</div><div class="gc-desc">Lose fat + build muscle. Advanced protocol.</div></div>
+        </div>
+        <div class="slabel pad">Daily Macro Targets</div>
+        <div class="macro-targets">
+          <div class="mt-card">
+            <div class="mt-title">Drag to adjust your targets</div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--accent)">Calories</span><input type="range" class="mt-slider" min="1200" max="4000" value="2300" style="background:linear-gradient(to right,var(--accent) 46%,rgba(255,255,255,0.1) 46%)" oninput="updSlider(this,'calT','kcal')"><span class="mt-val" id="calT" style="color:var(--accent)">2,300 kcal</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--blue)">Protein</span><input type="range" class="mt-slider" min="50" max="350" value="200" style="background:linear-gradient(to right,var(--blue) 50%,rgba(255,255,255,0.1) 50%)" oninput="updSlider(this,'pT','g')"><span class="mt-val" id="pT" style="color:var(--blue)">200g</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--gold)">Carbs</span><input type="range" class="mt-slider" min="50" max="500" value="280" style="background:linear-gradient(to right,var(--gold) 51%,rgba(255,255,255,0.1) 51%)" oninput="updSlider(this,'cT','g')"><span class="mt-val" id="cT" style="color:var(--gold)">280g</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--red)">Fat</span><input type="range" class="mt-slider" min="20" max="200" value="80" style="background:linear-gradient(to right,var(--red) 33%,rgba(255,255,255,0.1) 33%)" oninput="updSlider(this,'fT','g')"><span class="mt-val" id="fT" style="color:var(--red)">80g</span></div>
+          </div>
+        </div>
+        <div class="slabel pad">✦ Founder's Wisdom</div>
+        <div class="wisdom-cards">
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Cutting</div><div class="w-title">Protein is non-negotiable when cutting</div><div class="w-body">When I went from 240lbs to sub-10% body fat, I never dropped protein below 1g per pound of bodyweight. People cut calories but lose muscle and end up just looking smaller. Keep protein high, drop carbs and fat moderately, and trust the process.</div></div>
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Bulking</div><div class="w-title">A lean bulk is patience, not pizza</div><div class="w-body">The biggest bulking mistake is eating everything in sight. A true lean bulk is 200–300 calories above maintenance max. I learned this the hard way after bulking dirty and spending months cutting unnecessary fat. Slow and steady wins the physique.</div></div>
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Carb Timing</div><div class="w-title">Carbs around your workout — period</div><div class="w-body">Pre-workout carbs are your fuel. Post-workout carbs are your recovery. I always front-loaded carbs around training and kept them lower at night. This one shift changed my body composition more than anything else I did.</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- INSIGHTS -->
+      <div class="nview" id="nv-insights">
+        <div class="screen-header"><div class="screen-title">Weekly <em>Insights</em></div><div class="screen-sub">AI patterns from your nutrition data</div></div>
+        <div style="margin:0 20px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;">
+          <div class="slabel" style="margin-bottom:14px">Calories This Week</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;height:72px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:72%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">M</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:88%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">T</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:65%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">W</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:95%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">T</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:78%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">F</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:55%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">S</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:80%;background:var(--accent);border-radius:5px 5px 0 0;box-shadow:0 0 8px rgba(100,255,180,0.4)"></div></div><div style="font-size:9px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700">S</div></div>
+          </div>
+        </div>
+        <div style="padding:0 20px;display:flex;flex-direction:column;gap:9px">
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(116,185,255,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💪</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue);margin-bottom:3px">Protein Trend</div><div style="font-size:13px;font-weight:500">Consistently strong protein</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">You've hit 85%+ of your protein goal 5 out of 7 days. This is elite-level consistency and will directly translate to muscle growth.</div></div>
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(255,209,102,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">⚡</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:3px">Carb Timing</div><div style="font-size:13px;font-weight:500">Carbs low on training days</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">On workout days, carb intake averages 190g vs your 280g goal. More fuel pre-training will boost your performance significantly.</div></div>
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(100,255,180,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📈</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:3px">Risn Score Impact</div><div style="font-size:13px;font-weight:500">Nutrition added +6 to your score</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">Consistent logging and hitting protein targets this week boosted your overall Risn Score. Nutrition is now your strongest pillar.</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')" id="nav-home"><div class="nav-dot"></div><div class="nav-icon">⬡</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="switchTab('coach')" id="nav-coach"><div class="nav-dot"></div><div class="nav-icon">🤖</div><div class="nav-label">Coach</div></div>
+    <div class="nav-item" onclick="switchTab('nutrition')" id="nav-nutrition"><div class="nav-dot"></div><div class="nav-icon">🍎</div><div class="nav-label">Nutrition</div></div>
+    <div class="nav-item" onclick="switchTab('fitness')" id="nav-fitness"><div class="nav-dot"></div><div class="nav-icon">💪</div><div class="nav-label">Fitness</div></div>
+  </div>
+
+  <!-- LOG FOOD MODAL -->
+  <div class="modal" id="logModal">
+    <div class="modal-hdr"><div class="modal-title">Log <em>Food</em></div><div class="modal-close" onclick="closeModal()">×</div></div>
+    <div class="log-method-tabs">
+      <div class="lmt active" id="lmt-search" onclick="switchLogTab('search')"><span class="lmt-icon">🔍</span>Search</div>
+      <div class="lmt" id="lmt-photo" onclick="switchLogTab('photo')"><span class="lmt-icon">📸</span>Photo AI</div>
+    </div>
+    <div class="meal-sel-row" id="mealSelRow">
+      <div class="msb sel" onclick="setMeal(this,'breakfast')">☀️ Breakfast</div>
+      <div class="msb" onclick="setMeal(this,'lunch')">🌤 Lunch</div>
+      <div class="msb" onclick="setMeal(this,'dinner')">🌙 Dinner</div>
+      <div class="msb" onclick="setMeal(this,'snacks')">🍎 Snacks</div>
+    </div>
+    <!-- Search -->
+    <div class="modal-content" id="mc-search">
+      <div class="search-bar">
+        <input class="search-input" id="foodSearch" placeholder="Search food (e.g. chicken breast)..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="search-go" onclick="doSearch()">→</button>
+      </div>
+      <div class="search-spinner-wrap" id="searchSpinner"><div class="search-spinner"></div><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif">Searching USDA database...</div></div>
+      <div class="search-results" id="searchResults"><div class="no-results">Search any food above.<br>Powered by USDA FoodData Central.</div></div>
+      <div class="add-panel" id="addPanel">
+        <div class="ap-name" id="apName">—</div>
+        <div class="ap-sub" id="apSub">Per 100g</div>
+        <div class="ap-macro-grid">
+          <div class="ap-macro"><div class="ap-m-val" id="apCal" style="color:var(--accent)">—</div><div class="ap-m-lbl">Calories</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apP" style="color:var(--blue)">—</div><div class="ap-m-lbl">Protein</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apC" style="color:var(--gold)">—</div><div class="ap-m-lbl">Carbs</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apF" style="color:var(--red)">—</div><div class="ap-m-lbl">Fat</div></div>
+        </div>
+        <div class="ap-serving-row"><span class="ap-serving-lbl">Serving:</span><input class="ap-serving-input" type="number" id="apServing" value="100" min="1" max="2000" oninput="recalcServing()"><span class="ap-serving-unit">g</span></div>
+        <button class="ap-confirm-btn" onclick="confirmAdd()">+ Add to Log</button>
+      </div>
+    </div>
+    <!-- Photo -->
+    <div class="modal-content" id="mc-photo" style="display:none">
+      <div class="photo-zone" onclick="document.getElementById('photoInput').click()"><span class="pz-icon">📸</span><div class="pz-title">Snap or upload your meal</div><div class="pz-sub">Risn AI identifies the food<br>and estimates your macros</div></div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(this)" style="display:none">
+      <div class="photo-preview" id="photoPreview"><img id="photoImg" src="" alt="meal"></div>
+      <div class="ai-analyzing" id="aiAnalyzing"><div class="an-spinner"></div><div class="an-txt">Analyzing your meal...<br>Identifying foods & macros</div></div>
+      <div class="add-panel" id="photoPanel">
+        <div class="ap-name" id="ppName">—</div>
+        <div class="ap-sub" id="ppSub">AI Estimated</div>
+        <div class="ap-macro-grid">
+          <div class="ap-macro"><div class="ap-m-val" id="ppCal" style="color:var(--accent)">—</div><div class="ap-m-lbl">Calories</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppP" style="color:var(--blue)">—</div><div class="ap-m-lbl">Protein</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppC" style="color:var(--gold)">—</div><div class="ap-m-lbl">Carbs</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppF" style="color:var(--red)">—</div><div class="ap-m-lbl">Fat</div></div>
+        </div>
+        <div class="ap-sub" id="ppConf" style="color:var(--accent);margin-bottom:10px"></div>
+        <button class="ap-confirm-btn" onclick="confirmPhoto()">+ Add to Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><div style="flex:1"><div class="toast-lbl">Risn</div><div class="toast-msg" id="toastMsg"></div></div><div class="toast-x" onclick="hideToast()">×</div></div>
+</div>
+
+<script>
+// ── CLOCK ──
+function tick(){const n=new Date();document.getElementById('clk').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
+tick();setInterval(tick,30000);
+
+// ── BOTTOM TABS ──
+function switchTab(t){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`s-${t}`).classList.add('active');
+  document.getElementById(`nav-${t}`).classList.add('active');
+}
+
+// ── NUTRITION SUB-TABS ──
+function switchNutrTab(v,btn){
+  document.querySelectorAll('.nview').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+  document.getElementById(`nv-${v}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── HABITS ──
+function toggleHabit(el){
+  const was=el.classList.contains('done');
+  el.classList.toggle('done');
+  const chk=el.querySelector('.hcheck');
+  if(!was){chk.textContent='✓';showToast(`"${el.querySelector('.h-name').textContent}" complete! Risn Score updated 🔥`);}
+  else chk.textContent='';
+}
+
+// ── COACH ──
+const moodMap={great:"Love that energy! On days like this momentum is your superpower. What's your biggest win you want today?",good:"Good is solid ground. Consistency here builds everything. What would make today feel like a real win?",okay:"Okay is honest — and honesty is where change starts. What's one small thing that could shift your energy?",low:"Thank you for telling me. Low days don't define the journey. I'm here. What's weighing on you most right now?",stressed:"Stress is a signal something matters. Let's slow it down first — take one breath. What's piling up on you?",anxious:"You're not alone in this. Let's ground you: name 3 things you can see around you right now."};
+let chatHistory=[];
+function pickMood(el,m){
+  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(()=>addAI(moodMap[m]),300);
+}
+function sendQuick(t){document.getElementById('msgInput').value=t;sendMsg();document.getElementById('quickRow').style.display='none';}
+function addUser(t){const n=new Date(),ts=`${n.getHours()}:${String(n.getMinutes()).padStart(2,'0')}`;const el=document.createElement('div');el.className='msg user';el.innerHTML=`<div class="bubble">${t}</div><div class="msg-time">${ts}</div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function addAI(t){const n=new Date(),ts=`${n.getHours()}:${String(n.getMinutes()).padStart(2,'0')}`;const el=document.createElement('div');el.className='msg ai';el.innerHTML=`<div class="bubble">${t}</div><div class="msg-time">${ts}</div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function showTyping(){const el=document.createElement('div');el.className='msg ai';el.id='typing';el.innerHTML=`<div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function scrollChat(){const c=document.getElementById('chatMsgs');c.scrollTop=c.scrollHeight;}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+async function sendMsg(){
+  const inp=document.getElementById('msgInput');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.style.height='auto';
+  addUser(txt);
+  document.getElementById('sendBtn').disabled=true;
+  showTyping();
+  chatHistory.push({role:'user',content:txt});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:"You are Risn's AI wellness coach — warm, wise, direct, and emotionally intelligent. The founder of Risn went from obese to sub-10% body fat and nearly appeared in Men's Health. Help with mental health, fitness, nutrition, and habits with real expertise. Be personal and concise — 2-4 sentences max. Never be generic. The user is on a 14-day streak with a Risn Score of 82.",messages:chatHistory})});
+    const d=await res.json();
+    const reply=d.content?.[0]?.text||"I'm here with you. One step at a time.";
+    chatHistory.push({role:'assistant',content:reply});
+    document.getElementById('typing')?.remove();
+    addAI(reply);
+  }catch{document.getElementById('typing')?.remove();addAI("You showed up today and that's what matters most. Let's take it one step at a time — what's most important right now?");}
+  document.getElementById('sendBtn').disabled=false;
+}
+
+// ── FITNESS ──
+let fState={type:null,split:null,level:null};
+const typeLabels={weights:'🏋️ Weights',calisthenics:'🤸 Calisthenics',mix:'⚡ Mix'};
+const splitLabels={ppl:'🔄 Push/Pull/Legs',fullbody:'💪 Full Body','upper-lower':'↕️ Upper/Lower',bro:'🎯 One Body Part','2day':'✌️ 2-Part Split'};
+const levelLabels={beginner:'🌱 Beginner',intermediate:'🔥 Intermediate',advanced:'⚡ Advanced'};
+
+function selType(t){
+  fState={type:t,split:null,level:null};
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="tc-"]').forEach(c=>c.textContent='');
+  document.getElementById(`type-${t}`).classList.add('selected');
+  document.getElementById(`tc-${t}`).textContent='✓';
+  document.querySelectorAll('.split-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="sc-"]').forEach(c=>c.textContent='');
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('levelSec').classList.remove('vis');
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('workoutResult').classList.remove('vis');
+  document.getElementById('workoutResult').innerHTML='';
+  document.getElementById('genSpinner').classList.remove('show');
+  if(t==='weights'||t==='mix'){document.getElementById('splitSec').classList.add('vis');}
+  else{document.getElementById('splitSec').classList.remove('vis');setTimeout(()=>{document.getElementById('levelSec').classList.add('vis');scrollTo('levelSec');},200);}
+}
+function selSplit(s){
+  fState.split=s;fState.level=null;
+  document.querySelectorAll('.split-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="sc-"]').forEach(c=>c.textContent='');
+  document.getElementById(`sp-${s}`).classList.add('selected');
+  document.getElementById(`sc-${s}`).textContent='✓';
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('levelSec').classList.add('vis');
+  setTimeout(()=>scrollTo('levelSec'),200);
+}
+function selLevel(l){
+  fState.level=l;
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById(`lv-${l}`).classList.add('selected');
+  buildSum();
+  document.getElementById('genSec').classList.add('vis');
+  setTimeout(()=>scrollTo('genSec'),200);
+}
+function buildSum(){
+  const r=document.getElementById('sumRow');
+  let h='';
+  if(fState.type)h+=`<span class="sum-chip sum-a">${typeLabels[fState.type]}</span>`;
+  if(fState.split)h+=`<span class="sum-chip sum-g">${splitLabels[fState.split]}</span>`;
+  if(fState.level)h+=`<span class="sum-chip sum-b">${levelLabels[fState.level]}</span>`;
+  r.innerHTML=h;
+}
+function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+
+async function generateWorkout(){
+  const{type,split,level}=fState;
+  if(!type||!level){showToast('Pick your style and level first 💪');return;}
+  if((type==='weights'||type==='mix')&&!split){showToast('Choose your split to continue');return;}
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('workoutResult').classList.remove('vis');
+  document.getElementById('workoutResult').innerHTML='';
+  document.getElementById('genSpinner').classList.add('show');
+  const splitTxt=split?`, using a ${splitLabels[split]} split`:'';
+  const prompt=`Create a ${levelLabels[level]} ${typeLabels[type]} workout${splitTxt}. Return ONLY raw JSON: {"title":"name","duration":"X min","intensity":"High/Medium/Low","coachNote":"1-2 sentence motivational note","exercises":[{"name":"Exercise","target":"muscles","sets":"3 × 10","isRest":false}]}. Include 6-9 exercises, 1-2 rest entries. No markdown, pure JSON.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are Risn\'s fitness AI. Return ONLY valid JSON. No markdown, no explanation.',messages:[{role:'user',content:prompt}]})});
+    const d=await res.json();
+    const raw=d.content?.[0]?.text||'{}';
+    const w=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    document.getElementById('genSpinner').classList.remove('show');
+    renderWorkout(w);
+  }catch{
+    document.getElementById('genSpinner').classList.remove('show');
+    renderWorkout(getFallback(type,split,level));
+  }
+}
+function renderWorkout(w){
+  const exH=w.exercises.map((ex,i)=>`<div class="ex-card ${ex.isRest?'rest-card':''}"><div class="ex-num">${ex.isRest?'⏸':i+1}</div><div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-target">${ex.target}</div></div><div class="ex-sets">${ex.sets}</div></div>`).join('');
+  document.getElementById('workoutResult').innerHTML=`<div class="wh-card"><div class="wh-glow"></div><div class="wh-ai-tag"><div class="ai-dot"></div><div class="ai-tag-txt">AI Generated · Built for you</div></div><div class="wh-title">${w.title}</div><div class="wh-meta-row"><span class="wh-meta-chip">⏱ ${w.duration}</span><span class="wh-meta-chip">⚡ ${w.intensity}</span><span class="wh-meta-chip">${typeLabels[fState.type]}</span>${fState.split?`<span class="wh-meta-chip">${splitLabels[fState.split]}</span>`:''}<span class="wh-meta-chip">${levelLabels[fState.level]}</span></div><button class="start-btn">Start Workout →</button></div><div class="coach-note"><div class="cn-note-avatar">🤖</div><div><div class="cn-note-lbl">✦ Coach says</div><div class="cn-note-txt">${w.coachNote}</div></div></div><div class="ex-list-lbl">${w.exercises.filter(e=>!e.isRest).length} Exercises · ${w.duration}</div>${exH}<button class="rebuild-btn" onclick="rebuildWorkout()">↺ Generate Different Workout</button>`;
+  document.getElementById('workoutResult').classList.add('vis');
+  setTimeout(()=>scrollTo('workoutResult'),100);
+}
+function rebuildWorkout(){buildSum();document.getElementById('genSec').classList.add('vis');document.getElementById('workoutResult').classList.remove('vis');setTimeout(()=>{document.getElementById('workoutResult').innerHTML='';},500);scrollTo('genSec');}
+function getFallback(type,split){
+  const w={weights:{ppl:{title:"Push Day Power",duration:"50 min",intensity:"High",coachNote:"Push muscles firing today — chest, shoulders, triceps. Start heavy and finish strong.",exercises:[{name:"Barbell Bench Press",target:"Chest primary",sets:"4 × 6",isRest:false},{name:"Incline Dumbbell Press",target:"Upper chest",sets:"3 × 10",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Overhead Press",target:"Shoulders",sets:"4 × 8",isRest:false},{name:"Lateral Raises",target:"Lateral deltoids",sets:"3 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Skull Crushers",target:"Triceps isolation",sets:"3 × 12",isRest:false},{name:"Cable Pushdown",target:"Triceps finisher",sets:"3 × 15",isRest:false}]},fullbody:{title:"Full Body Strength",duration:"55 min",intensity:"High",coachNote:"Every major muscle group today. This session builds your foundation.",exercises:[{name:"Barbell Squat",target:"Quads · Glutes · Core",sets:"4 × 8",isRest:false},{name:"Bench Press",target:"Chest · Triceps",sets:"4 × 8",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Barbell Row",target:"Back · Biceps",sets:"4 × 8",isRest:false},{name:"Romanian Deadlift",target:"Hamstrings · Glutes",sets:"3 × 10",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Overhead Press",target:"Shoulders",sets:"3 × 10",isRest:false},{name:"Plank Hold",target:"Core stability",sets:"3 × 45s",isRest:false}]}},calisthenics:{title:"Bodyweight Power",duration:"40 min",intensity:"Medium-High",coachNote:"Your body is the gym. Control every single rep and feel every muscle working.",exercises:[{name:"Pull-ups",target:"Back · Biceps",sets:"4 × max",isRest:false},{name:"Push-up Variations",target:"Chest · Triceps · Core",sets:"4 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Bodyweight Squat",target:"Quads · Glutes",sets:"3 × 20",isRest:false},{name:"Dips",target:"Triceps · Chest",sets:"3 × 12",isRest:false},{name:"Rest",target:"Recovery",sets:"45 sec",isRest:true},{name:"Hollow Body Hold",target:"Core tension",sets:"3 × 30s",isRest:false},{name:"Mountain Climbers",target:"Cardio · Core",sets:"3 × 45s",isRest:false}]},mix:{title:"Hybrid Power Session",duration:"50 min",intensity:"High",coachNote:"Iron and bodyweight together. Functional, strong, and built to last.",exercises:[{name:"Barbell Deadlift",target:"Posterior chain",sets:"4 × 5",isRest:false},{name:"Pull-ups",target:"Back · Biceps",sets:"4 × 8",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Dumbbell Press",target:"Chest · Shoulders",sets:"3 × 10",isRest:false},{name:"Push-up Finisher",target:"Chest · Triceps",sets:"3 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Goblet Squat",target:"Quads · Glutes",sets:"3 × 12",isRest:false},{name:"Plank to Push-up",target:"Core · Shoulders",sets:"3 × 10",isRest:false}]}};
+  if(type==='weights'&&split&&w.weights[split])return w.weights[split];
+  if(type==='weights')return w.weights.fullbody;
+  if(type==='calisthenics')return w.calisthenics;
+  return w.mix;
+}
+
+// ── NUTRITION ──
+let activeMeal='breakfast';
+let selFood=null;
+
+function selGoal(g){
+  document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('[id^="gchk-"]').forEach(c=>c.textContent='');
+  document.getElementById(`gc-${g}`).classList.add('active');
+  document.getElementById(`gchk-${g}`).textContent='✓';
+  document.getElementById('goalPill').textContent=`🎯 ${g.charAt(0).toUpperCase()+g.slice(1)}`;
+  showToast(`Goal updated to ${g}. Macro targets adjusted.`);
+}
+function updSlider(el,id,unit){
+  const v=parseInt(el.value),pct=((v-parseInt(el.min))/(parseInt(el.max)-parseInt(el.min)))*100;
+  const col=el.style.background.match(/(var\([^)]+\))/)?.[1]||'var(--accent)';
+  el.style.background=`linear-gradient(to right,${col} ${pct}%,rgba(255,255,255,0.1) ${pct}%)`;
+  document.getElementById(id).textContent=unit==='kcal'?v.toLocaleString()+' kcal':v+'g';
+}
+
+// Modal
+function openModal(tab){document.getElementById('logModal').classList.add('show');switchLogTab(tab);}
+function openModalForMeal(tab,meal){openModal(tab);setMealById(meal);}
+function closeModal(){
+  document.getElementById('logModal').classList.remove('show');
+  document.getElementById('foodSearch').value='';
+  document.getElementById('searchResults').innerHTML='<div class="no-results">Search any food above.<br>Powered by USDA FoodData Central.</div>';
+  document.getElementById('addPanel').classList.remove('show');
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('aiAnalyzing').classList.remove('show');
+  document.getElementById('photoPanel').classList.remove('show');
+  selFood=null;
+}
+function switchLogTab(t){
+  ['search','photo'].forEach(x=>{document.getElementById(`lmt-${x}`).classList.toggle('active',x===t);document.getElementById(`mc-${x}`).style.display=x===t?'block':'none';});
+}
+function setMeal(btn,meal){document.querySelectorAll('.msb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');activeMeal=meal;}
+function setMealById(meal){document.querySelectorAll('.msb').forEach(b=>{if(b.getAttribute('onclick')?.includes(meal))b.classList.add('sel');else b.classList.remove('sel');});activeMeal=meal;}
+
+// USDA Search
+async function doSearch(){
+  const q=document.getElementById('foodSearch').value.trim();if(!q)return;
+  document.getElementById('searchSpinner').style.display='block';
+  document.getElementById('searchResults').innerHTML='';
+  document.getElementById('addPanel').classList.remove('show');selFood=null;
+  try{
+    const res=await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(q)}&pageSize=8&dataType=Foundation,SR%20Legacy,Branded&api_key=DEMO_KEY`);
+    const d=await res.json();
+    document.getElementById('searchSpinner').style.display='none';
+    if(!d.foods?.length){document.getElementById('searchResults').innerHTML='<div class="no-results">No results found. Try a different term.</div>';return;}
+    renderSearchResults(d.foods.slice(0,8));
+  }catch{document.getElementById('searchSpinner').style.display='none';renderSearchResults(getFallbackFoods(q));}
+}
+function getN(nutrients,id){const n=nutrients?.find(x=>x.nutrientId===id||x.nutrientNumber===String(id));return n?Math.round(n.value||0):0;}
+function renderSearchResults(foods){
+  window._foods=foods;
+  document.getElementById('searchResults').innerHTML=foods.map((f,i)=>{
+    const cal=getN(f.foodNutrients,1008)||getN(f.foodNutrients,'208');
+    const p=getN(f.foodNutrients,1003)||getN(f.foodNutrients,'203');
+    const c=getN(f.foodNutrients,1005)||getN(f.foodNutrients,'205');
+    const fat=getN(f.foodNutrients,1004)||getN(f.foodNutrients,'204');
+    return `<div class="result-item" onclick="selectFood(${i})"><div class="ri-name">${f.description}</div><div class="ri-brand">${f.brandOwner||f.dataType||'USDA'} · per 100g</div><div class="ri-macros"><span class="fm-chip fm-cal">${cal} kcal</span><span class="fm-chip fm-p">P:${p}g</span><span class="fm-chip fm-c">C:${c}g</span><span class="fm-chip fm-f">F:${fat}g</span></div></div>`;
+  }).join('');
+}
+function selectFood(i){
+  const f=window._foods[i];
+  const cal=getN(f.foodNutrients,1008)||getN(f.foodNutrients,'208');
+  const p=getN(f.foodNutrients,1003)||getN(f.foodNutrients,'203');
+  const c=getN(f.foodNutrients,1005)||getN(f.foodNutrients,'205');
+  const fat=getN(f.foodNutrients,1004)||getN(f.foodNutrients,'204');
+  selFood={name:f.description,brand:f.brandOwner||'USDA',cal100:cal,p100:p,c100:c,f100:fat};
+  document.getElementById('apName').textContent=f.description;
+  document.getElementById('apSub').textContent=`${f.brandOwner||'USDA'} · per 100g`;
+  document.getElementById('apCal').textContent=cal;
+  document.getElementById('apP').textContent=p+'g';
+  document.getElementById('apC').textContent=c+'g';
+  document.getElementById('apF').textContent=fat+'g';
+  document.getElementById('apServing').value=100;
+  document.getElementById('addPanel').classList.add('show');
+  document.getElementById('addPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function recalcServing(){
+  if(!selFood)return;
+  const s=parseInt(document.getElementById('apServing').value)||100,m=s/100;
+  document.getElementById('apCal').textContent=Math.round(selFood.cal100*m);
+  document.getElementById('apP').textContent=Math.round(selFood.p100*m)+'g';
+  document.getElementById('apC').textContent=Math.round(selFood.c100*m)+'g';
+  document.getElementById('apF').textContent=Math.round(selFood.f100*m)+'g';
+}
+function confirmAdd(){
+  if(!selFood)return;
+  const s=parseInt(document.getElementById('apServing').value)||100,m=s/100;
+  addFoodItem({name:selFood.name,serving:`${s}g`,icon:foodEmoji(selFood.name),cal:Math.round(selFood.cal100*m),p:Math.round(selFood.p100*m),c:Math.round(selFood.c100*m),f:Math.round(selFood.f100*m)},activeMeal);
+  closeModal();
+  showToast(`Added ${selFood.name} to ${activeMeal}!`);
+}
+
+// Photo AI
+async function handlePhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    document.getElementById('photoPreview').style.display='block';
+    document.getElementById('photoImg').src=e.target.result;
+    document.getElementById('aiAnalyzing').classList.add('show');
+    document.getElementById('photoPanel').classList.remove('show');
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are Risn nutrition AI. Analyze a food image and return ONLY raw JSON: {"name":"Food Name","description":"brief desc","confidence":"High/Medium/Low","servingNote":"estimated serving","calories":000,"protein":00,"carbs":00,"fat":00}. No markdown.',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:e.target.result.split(',')[1]}},{type:'text',text:'Identify food and estimate macros. JSON only.'}]}]})});
+      const d=await res.json();
+      const food=JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
+      document.getElementById('aiAnalyzing').classList.remove('show');
+      renderPhotoResult(food);
+    }catch{
+      document.getElementById('aiAnalyzing').classList.remove('show');
+      renderPhotoResult({name:'Mixed Meal',description:'AI Estimated',confidence:'Medium',calories:450,protein:32,carbs:48,fat:14,servingNote:'Estimated portion'});
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function renderPhotoResult(food){
+  document.getElementById('ppName').textContent=food.name||'Identified Meal';
+  document.getElementById('ppSub').textContent=food.description||'AI Estimated';
+  document.getElementById('ppCal').textContent=food.calories||'—';
+  document.getElementById('ppP').textContent=(food.protein||'—')+'g';
+  document.getElementById('ppC').textContent=(food.carbs||'—')+'g';
+  document.getElementById('ppF').textContent=(food.fat||'—')+'g';
+  document.getElementById('ppConf').textContent=`Confidence: ${food.confidence||'Medium'} · ${food.servingNote||'Est. serving'}`;
+  document.getElementById('photoPanel').classList.add('show');
+  window._photoFood=food;
+}
+function confirmPhoto(){
+  const food=window._photoFood;if(!food)return;
+  addFoodItem({name:food.name,serving:food.servingNote||'1 serving',icon:foodEmoji(food.name),cal:food.calories||0,p:food.protein||0,c:food.carbs||0,f:food.fat||0},activeMeal);
+  closeModal();
+  showToast(`${food.name} added via AI photo! 📸`);
+}
+function addFoodItem(item,meal){
+  const g=document.getElementById(`mg-${meal}`);
+  const empty=g.querySelector('.empty-meal');if(empty)empty.remove();
+  g.insertAdjacentHTML('beforeend',`<div class="food-item"><div class="food-icon">${item.icon}</div><div class="food-info"><div class="food-name">${item.name}</div><div class="food-serving">${item.serving}</div><div class="food-macros"><span class="fm-chip fm-cal">${item.cal} kcal</span><span class="fm-chip fm-p">P:${item.p}g</span><span class="fm-chip fm-c">C:${item.c}g</span><span class="fm-chip fm-f">F:${item.f}g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>`);
+  updateTotals();
+}
+function removeFood(btn){btn.closest('.food-item').remove();updateTotals();}
+function updateTotals(){
+  let cal=0,p=0,c=0,f=0;
+  document.querySelectorAll('.food-item').forEach(item=>{
+    const chips=item.querySelectorAll('.fm-chip');
+    if(chips[0])cal+=parseInt(chips[0].textContent)||0;
+    if(chips[1])p+=parseInt(chips[1].textContent.replace('P:',''))||0;
+    if(chips[2])c+=parseInt(chips[2].textContent.replace('C:',''))||0;
+    if(chips[3])f+=parseInt(chips[3].textContent.replace('F:',''))||0;
+  });
+  const goal=2300,rem=Math.max(0,goal-cal),pct=Math.min(cal/goal,1);
+  document.getElementById('calConsumed').textContent=cal.toLocaleString();
+  document.getElementById('calRem').textContent=rem+' left';
+  document.getElementById('calRing').style.strokeDashoffset=276-(276*pct);
+  document.getElementById('mrf-eaten').textContent=cal.toLocaleString();
+  document.getElementById('mrf-rem').textContent=rem;
+  document.getElementById('pVals').textContent=`${p} / 200g`;
+  document.getElementById('cVals').textContent=`${c} / 280g`;
+  document.getElementById('fVals').textContent=`${f} / 80g`;
+  document.getElementById('pBar').style.width=Math.min(p/200*100,100)+'%';
+  document.getElementById('cBar').style.width=Math.min(c/280*100,100)+'%';
+  document.getElementById('fBar').style.width=Math.min(f/80*100,100)+'%';
+}
+function foodEmoji(n){
+  n=n.toLowerCase();
+  if(n.includes('chicken'))return '🍗';if(n.includes('beef')||n.includes('steak'))return '🥩';
+  if(n.includes('fish')||n.includes('salmon')||n.includes('tuna'))return '🐟';if(n.includes('egg'))return '🥚';
+  if(n.includes('rice'))return '🍚';if(n.includes('oat')||n.includes('wheat'))return '🌾';
+  if(n.includes('bread'))return '🍞';if(n.includes('pasta'))return '🍝';if(n.includes('broccoli'))return '🥦';
+  if(n.includes('spinach')||n.includes('salad'))return '🥗';if(n.includes('banana'))return '🍌';
+  if(n.includes('apple'))return '🍎';if(n.includes('milk'))return '🥛';if(n.includes('cheese'))return '🧀';
+  if(n.includes('yogurt'))return '🫙';if(n.includes('sweet potato')||n.includes('potato'))return '🥔';
+  if(n.includes('protein')||n.includes('shake'))return '💪';if(n.includes('almond')||n.includes('nut'))return '🥜';
+  return '🍽️';
+}
+function getFallbackFoods(q){
+  const all=[{description:'Chicken Breast, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:120},{nutrientId:1003,value:22},{nutrientId:1005,value:0},{nutrientId:1004,value:2.6}]},{description:'Ground Beef, 90% Lean',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:176},{nutrientId:1003,value:20},{nutrientId:1005,value:0},{nutrientId:1004,value:11}]},{description:'White Rice, Cooked',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:130},{nutrientId:1003,value:2.7},{nutrientId:1005,value:28},{nutrientId:1004,value:0.3}]},{description:'Whole Eggs, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:143},{nutrientId:1003,value:13},{nutrientId:1005,value:1},{nutrientId:1004,value:10}]},{description:'Rolled Oats',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:389},{nutrientId:1003,value:17},{nutrientId:1005,value:66},{nutrientId:1004,value:7}]},{description:'Salmon, Atlantic',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:208},{nutrientId:1003,value:20},{nutrientId:1005,value:0},{nutrientId:1004,value:13}]},{description:'Broccoli, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:34},{nutrientId:1003,value:2.8},{nutrientId:1005,value:7},{nutrientId:1004,value:0.4}]},{description:'Sweet Potato, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:86},{nutrientId:1003,value:1.6},{nutrientId:1005,value:20},{nutrientId:1004,value:0.1}]}];
+  const filtered=all.filter(f=>f.description.toLowerCase().includes(q.toLowerCase().split(' ')[0]));
+  return filtered.length?filtered:all.slice(0,4).concat([{description:q+' (Estimated)',brandOwner:'Estimated',dataType:'Est',foodNutrients:[{nutrientId:1008,value:200},{nutrientId:1003,value:15},{nutrientId:1005,value:20},{nutrientId:1004,value:8}]}]);
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg){clearTimeout(toastTimer);document.getElementById('toastMsg').textContent=msg;document.getElementById('toast').classList.add('show');toastTimer=setTimeout(hideToast,4500);}
+function hideToast(){document.getElementById('toast').classList.remove('show');}
+
+// ── PWA ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;setTimeout(()=>document.getElementById('installBanner').classList.add('show'),2500);});
+document.getElementById('installBtn').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')document.getElementById('installBanner').classList.remove('show');deferredPrompt=null;}});
+if('serviceWorker' in navigator){const sw=`self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})));}
+</script>
+</body>
+</html>
