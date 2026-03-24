@@ -25,11 +25,12 @@ document.write(`<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
 }
 html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);margin:0;padding:0;}
 
-/* ── NATIVE APP SHELL ── */
-.phone{width:100%;height:100%;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;position:relative;}
+/* ── NATIVE APP SHELL — fills any screen, any device ── */
+.phone{width:100%;height:100%;height:100dvh;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;position:relative;}
 
-/* ── STATUS BAR ── */
-.status{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 6px;font-size:12px;font-weight:700;color:var(--text-muted);font-family:'Syne',sans-serif;flex-shrink:0;background:var(--bg);}
+/* ── STATUS BAR — hidden when running as installed PWA ── */
+.status{display:flex;justify-content:space-between;align-items:center;padding:max(env(safe-area-inset-top,12px),12px) 24px 6px;font-size:12px;font-weight:700;color:var(--text-muted);font-family:'Syne',sans-serif;flex-shrink:0;background:var(--bg);}
+@media (display-mode: standalone){.status{display:none;}}
 
 /* ── SCREENS ── */
 .screens{flex:1;overflow:hidden;position:relative;}
@@ -39,7 +40,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 @keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{display:flex;flex-shrink:0;background:rgba(10,15,20,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 20px;}
+.bottom-nav{display:flex;flex-shrink:0;background:rgba(10,15,20,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 max(env(safe-area-inset-bottom,16px),16px);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:5px 0;transition:all 0.2s;position:relative;min-width:0;}
 .nav-icon{font-size:21px;transition:transform 0.25s;}
 .nav-label{font-size:8px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
@@ -48,7 +49,20 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .nav-item.active .nav-icon{transform:scale(1.2);filter:drop-shadow(0 0 8px rgba(100,255,180,0.5));}
 .nav-item.active .nav-dot{opacity:1;}
 
-/* ── SHARED COMPONENTS ── */
+/* ── SAFE AREA & RESPONSIVE ── */
+@supports (padding: max(0px)){
+  .bottom-nav{padding-left:max(env(safe-area-inset-left),0px);padding-right:max(env(safe-area-inset-right),0px);}
+  .screen{padding-left:max(env(safe-area-inset-left),0px);padding-right:max(env(safe-area-inset-right),0px);}
+}
+/* Wider screens (tablets, foldables inner screen) — cap content width for readability */
+@media (min-width:600px){
+  .score-ring-card,.macro-ring-card,.report-wrap,.ch-featured,.sleep-ring-card{max-width:560px;margin-left:auto;margin-right:auto;}
+  .home-hero,.screen-header,.rise-hdr{max-width:600px;margin-left:auto;margin-right:auto;width:100%;}
+  .badges-grid{max-width:560px;margin-left:auto;margin-right:auto;}
+  .ch-list,.photo-timeline,.sleep-time-cards,.sleep-week-card{max-width:560px;margin-left:auto;margin-right:auto;}
+  .stat-scroll-wrap{max-width:600px;margin-left:auto;margin-right:auto;}
+  .nav-label{font-size:10px;}
+}
 .pad{padding:0 20px;}
 .slabel{font-family:'Syne',sans-serif;font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
 .screen-header{padding:16px 20px 0;}
@@ -374,7 +388,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 /* ════════════════════════════════════
    LOG FOOD MODAL
 ════════════════════════════════════ */
-.modal{position:absolute;inset:0;background:rgba(6,10,13,0.94);z-index:80;display:none;flex-direction:column;border-radius:52px;overflow:hidden;backdrop-filter:blur(10px);}
+.modal{position:absolute;inset:0;background:rgba(6,10,13,0.94);z-index:80;display:none;flex-direction:column;border-radius:0;overflow:hidden;backdrop-filter:blur(10px);}
 .modal.show{display:flex;animation:modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes modalIn{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;flex-shrink:0;}
@@ -445,7 +459,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .toast-x{margin-left:auto;color:var(--text-muted);cursor:pointer;padding-left:7px;font-size:15px;flex-shrink:0;}
 
 /* ── INSTALL BANNER ── */
-.install-banner{position:absolute;top:0;left:0;right:0;z-index:200;background:var(--accent);color:var(--bg);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;transform:translateY(-100%);transition:transform 0.4s ease;border-radius:52px 52px 0 0;}
+.install-banner{position:absolute;top:0;left:0;right:0;z-index:200;background:var(--accent);color:var(--bg);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;transform:translateY(-100%);transition:transform 0.4s ease;}
 .install-banner.show{transform:translateY(0);}
 .ib-btn{background:var(--bg);color:var(--accent);border:none;padding:5px 14px;border-radius:100px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
 .ib-close{background:none;border:none;font-size:17px;color:var(--bg);cursor:pointer;opacity:0.6;}
@@ -498,7 +512,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .ch-badge-tag{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.06em;padding:3px 8px;border-radius:100px;}
 .ch-cnt{font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif;}
 /* Challenge modal */
-.ch-modal{position:absolute;inset:0;background:rgba(6,10,13,0.95);z-index:80;display:none;flex-direction:column;border-radius:52px;overflow:hidden;backdrop-filter:blur(12px);}
+.ch-modal{position:absolute;inset:0;background:rgba(6,10,13,0.95);z-index:80;display:none;flex-direction:column;border-radius:0;overflow:hidden;backdrop-filter:blur(12px);}
 .ch-modal.show{display:flex;animation:riseIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes riseIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 .ch-mhdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;flex-shrink:0;}
@@ -533,7 +547,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .b-check{position:absolute;top:7px;right:7px;width:13px;height:13px;border-radius:50%;background:var(--gold);display:none;align-items:center;justify-content:center;font-size:7px;color:var(--bg);}
 .badge-card.earned .b-check{display:flex;}
 /* Badge unlock */
-.badge-unlock{position:absolute;inset:0;background:rgba(6,10,13,0.92);z-index:90;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:52px;backdrop-filter:blur(12px);}
+.badge-unlock{position:absolute;inset:0;background:rgba(6,10,13,0.92);z-index:90;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:0;backdrop-filter:blur(12px);}
 .badge-unlock.show{display:flex;animation:buIn 0.4s ease;}
 @keyframes buIn{from{opacity:0;}to{opacity:1;}}
 .bu-ico{font-size:68px;animation:buBounce 0.6s cubic-bezier(0.34,1.56,0.64,1);}
@@ -567,7 +581,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .ai-report-btn{width:100%;padding:12px;background:transparent;border:1px solid rgba(100,255,180,0.18);border-radius:100px;color:var(--accent);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px;}
 .ai-report-btn:active{background:rgba(100,255,180,0.06);}
 /* AI Report Modal */
-.ai-report-modal{position:absolute;inset:0;background:var(--bg);z-index:85;display:none;flex-direction:column;border-radius:52px;overflow:hidden;}
+.ai-report-modal{position:absolute;inset:0;background:var(--bg);z-index:85;display:none;flex-direction:column;border-radius:0;overflow:hidden;}
 .ai-report-modal.show{display:flex;animation:riseIn 0.35s ease;}
 .arm-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .arm-title{font-family:'Instrument Serif',serif;font-size:22px;}
@@ -605,7 +619,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
 .pes-sub{font-size:11px;color:var(--text-muted);line-height:1.65;margin-bottom:16px;}
 .pes-btn{background:var(--accent);color:var(--bg);border:none;padding:11px 26px;border-radius:100px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
 /* Photo add modal */
-.photo-add-modal{position:absolute;inset:0;background:rgba(6,10,13,0.96);z-index:85;display:none;flex-direction:column;border-radius:52px;overflow:hidden;backdrop-filter:blur(12px);}
+.photo-add-modal{position:absolute;inset:0;background:rgba(6,10,13,0.96);z-index:85;display:none;flex-direction:column;border-radius:0;overflow:hidden;backdrop-filter:blur(12px);}
 .photo-add-modal.show{display:flex;animation:riseIn 0.35s ease;}
 .pam-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;flex-shrink:0;}
 .pam-title{font-family:'Instrument Serif',serif;font-size:22px;}
@@ -671,10 +685,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
     </div>
   </div>
 
+  <!-- Status -->
   <div class="status"><span id="clk">9:41</span><span>●●●● 🔋</span></div>
 
+  <!-- Screens -->
   <div class="screens">
 
+    <!-- ══════════════════ HOME ══════════════════ -->
     <div class="screen active" id="s-home">
       <div class="home-hero">
         <div class="home-greeting">Welcome back</div>
@@ -685,6 +702,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Risn Score -->
       <div class="score-ring-card">
         <div class="rings-row">
           <div class="ring-wrap">
@@ -710,6 +728,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Quick stats -->
       <div class="stat-scroll-wrap">
         <div class="stat-scroll">
           <div class="stat-chip" onclick="switchTab('nutrition')"><div class="sc-icon">💧</div><div class="sc-val">6/8</div><div class="sc-lbl">Hydration</div></div>
@@ -720,6 +739,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Nutrition preview -->
       <div class="nutrition-preview" onclick="switchTab('nutrition')">
         <div class="np-header">
           <div class="np-title">🍎 Today's Nutrition</div>
@@ -732,6 +752,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Habits -->
       <div class="habits-section">
         <div class="habits-header">
           <div class="slabel" style="margin:0">Today's Habits</div>
@@ -747,6 +768,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
       <div style="height:16px"></div>
     </div>
 
+    <!-- ══════════════════ COACH ══════════════════ -->
     <div class="screen" id="s-coach">
       <div class="coach-screen-wrap">
         <div class="screen-header" style="flex-shrink:0">
@@ -779,6 +801,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
       </div>
     </div>
 
+    <!-- ══════════════════ FITNESS ══════════════════ -->
     <div class="screen" id="s-fitness">
       <div class="screen-header">
         <div class="screen-title">Build Your <em>Workout</em></div>
@@ -810,6 +833,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Split -->
       <div class="split-sec" id="splitSec">
         <div class="slabel" style="margin-bottom:10px">Step 2 · Your Split</div>
         <div class="split-grid">
@@ -821,6 +845,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Level -->
       <div class="level-sec" id="levelSec">
         <div class="slabel" style="margin-bottom:10px">Step 3 · Experience Level</div>
         <div class="level-row">
@@ -830,32 +855,39 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
         </div>
       </div>
 
+      <!-- Generate -->
       <div class="gen-sec" id="genSec">
         <div class="sum-row" id="sumRow"></div>
         <button class="gen-btn" id="genBtn" onclick="generateWorkout()">Generate My Workout →</button>
       </div>
 
+      <!-- Spinner -->
       <div class="gen-spinner-wrap" id="genSpinner">
         <div class="g-spinner"></div>
         <div class="g-spinner-txt">Risn AI building<br>your perfect workout...</div>
       </div>
 
+      <!-- Result -->
       <div class="workout-result" id="workoutResult"></div>
     </div>
 
+    <!-- ══════════════════ NUTRITION ══════════════════ -->
     <div class="screen" id="s-nutrition">
+      <!-- Nutrition sub-tabs -->
       <div class="nutr-tabs" style="flex-shrink:0">
         <button class="ntab active" onclick="switchNutrTab('today',this)">Today</button>
         <button class="ntab" onclick="switchNutrTab('plan',this)">My Plan</button>
         <button class="ntab" onclick="switchNutrTab('insights',this)">Insights</button>
       </div>
 
+      <!-- TODAY -->
       <div class="nview active" id="nv-today">
         <div style="padding:12px 20px 0;display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.07em">MON · MARCH 23</span>
           <div class="pill" style="cursor:pointer" id="goalPill">🎯 Lean Bulk</div>
         </div>
         <div style="height:10px"></div>
+        <!-- Macro rings -->
         <div class="macro-ring-card">
           <div class="mr-row">
             <div class="mr-ring-wrap">
@@ -879,14 +911,17 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
             <div class="mrf-item"><div class="mrf-val" style="color:var(--blue)" id="mrf-rem">460</div><div class="mrf-lbl">Left</div></div>
           </div>
         </div>
+        <!-- AI insight -->
         <div class="nutr-insight">
           <div class="ni-av">🤖</div>
           <div><div class="ni-lbl">✦ Nutrition Coach</div><div class="ni-txt">Protein is on track but carbs are behind. With leg day today, get those carbs in before training — it'll fuel performance significantly.</div></div>
         </div>
+        <!-- Log buttons -->
         <div class="log-btns">
           <button class="log-btn log-btn-primary" onclick="openModal('search')">🔍 Search Food</button>
           <button class="log-btn log-btn-secondary" onclick="openModal('photo')">📸 Photo Log</button>
         </div>
+        <!-- Meals -->
         <div class="meals-wrap">
           <div class="meal-group" id="mg-breakfast">
             <div class="meal-hdr"><span class="meal-title">☀️ Breakfast</span><span class="meal-cals-txt">620 kcal</span><div class="meal-add" onclick="openModalForMeal('search','breakfast')">+</div></div>
@@ -900,4 +935,880 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);font-famil
           </div>
           <div class="meal-group" id="mg-dinner">
             <div class="meal-hdr"><span class="meal-title">🌙 Dinner</span><span class="meal-cals-txt">540 kcal</span><div class="meal-add" onclick="openModalForMeal('search','dinner')">+</div></div>
-            <div class="food-item"><div class="food-icon">🥩</div><div class="food-info"><div class="food-name">Ground Beef 90/10</div><div class="food-serving">170g</div><div class="food-macros"><span class="fm-chip fm-cal">320 kcal</span><span class="fm-chip fm-p">P:38g</span><span class="fm-chip fm-c">C:0g</span><span class="fm-chip fm-f">F:18g<
+            <div class="food-item"><div class="food-icon">🥩</div><div class="food-info"><div class="food-name">Ground Beef 90/10</div><div class="food-serving">170g</div><div class="food-macros"><span class="fm-chip fm-cal">320 kcal</span><span class="fm-chip fm-p">P:38g</span><span class="fm-chip fm-c">C:0g</span><span class="fm-chip fm-f">F:18g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+            <div class="food-item"><div class="food-icon">🥦</div><div class="food-info"><div class="food-name">Broccoli, Steamed</div><div class="food-serving">180g</div><div class="food-macros"><span class="fm-chip fm-cal">62 kcal</span><span class="fm-chip fm-p">P:5g</span><span class="fm-chip fm-c">C:12g</span><span class="fm-chip fm-f">F:0g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>
+          </div>
+          <div class="meal-group" id="mg-snacks">
+            <div class="meal-hdr"><span class="meal-title">🍎 Snacks</span><span class="meal-cals-txt" id="mc-snacks">0 kcal</span><div class="meal-add" onclick="openModalForMeal('search','snacks')">+</div></div>
+            <div class="empty-meal">No snacks logged yet — tap + to add</div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- PLAN -->
+      <div class="nview" id="nv-plan">
+        <div class="screen-header"><div class="screen-title">My <em>Plan</em></div><div class="screen-sub">Set your goal · Dial in your macros</div></div>
+        <div class="slabel pad">Your Goal</div>
+        <div class="goal-cards">
+          <div class="goal-card" id="gc-cut" onclick="selGoal('cut')"><div class="gc-check" id="gchk-cut"></div><span class="gc-icon">🔥</span><div class="gc-name">Cut</div><div class="gc-desc">Lose fat, keep muscle. Deficit + high protein.</div></div>
+          <div class="goal-card active" id="gc-bulk" onclick="selGoal('bulk')"><div class="gc-check" id="gchk-bulk">✓</div><span class="gc-icon">💪</span><div class="gc-name">Lean Bulk</div><div class="gc-desc">Build muscle, minimal fat. Slight surplus.</div></div>
+          <div class="goal-card" id="gc-maintain" onclick="selGoal('maintain')"><div class="gc-check" id="gchk-maintain"></div><span class="gc-icon">⚖️</span><div class="gc-name">Maintain</div><div class="gc-desc">Hold your physique. Performance focus.</div></div>
+          <div class="goal-card" id="gc-recomp" onclick="selGoal('recomp')"><div class="gc-check" id="gchk-recomp"></div><span class="gc-icon">⚡</span><div class="gc-name">Recomp</div><div class="gc-desc">Lose fat + build muscle. Advanced protocol.</div></div>
+        </div>
+        <div class="slabel pad">Daily Macro Targets</div>
+        <div class="macro-targets">
+          <div class="mt-card">
+            <div class="mt-title">Drag to adjust your targets</div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--accent)">Calories</span><input type="range" class="mt-slider" min="1200" max="4000" value="2300" style="background:linear-gradient(to right,var(--accent) 46%,rgba(255,255,255,0.1) 46%)" oninput="updSlider(this,'calT','kcal')"><span class="mt-val" id="calT" style="color:var(--accent)">2,300 kcal</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--blue)">Protein</span><input type="range" class="mt-slider" min="50" max="350" value="200" style="background:linear-gradient(to right,var(--blue) 50%,rgba(255,255,255,0.1) 50%)" oninput="updSlider(this,'pT','g')"><span class="mt-val" id="pT" style="color:var(--blue)">200g</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--gold)">Carbs</span><input type="range" class="mt-slider" min="50" max="500" value="280" style="background:linear-gradient(to right,var(--gold) 51%,rgba(255,255,255,0.1) 51%)" oninput="updSlider(this,'cT','g')"><span class="mt-val" id="cT" style="color:var(--gold)">280g</span></div>
+            <div class="mt-row"><span class="mt-label" style="color:var(--red)">Fat</span><input type="range" class="mt-slider" min="20" max="200" value="80" style="background:linear-gradient(to right,var(--red) 33%,rgba(255,255,255,0.1) 33%)" oninput="updSlider(this,'fT','g')"><span class="mt-val" id="fT" style="color:var(--red)">80g</span></div>
+          </div>
+        </div>
+        <div class="slabel pad">✦ Founder's Wisdom</div>
+        <div class="wisdom-cards">
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Cutting</div><div class="w-title">Protein is non-negotiable when cutting</div><div class="w-body">When I went from 240lbs to sub-10% body fat, I never dropped protein below 1g per pound of bodyweight. People cut calories but lose muscle and end up just looking smaller. Keep protein high, drop carbs and fat moderately, and trust the process.</div></div>
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Bulking</div><div class="w-title">A lean bulk is patience, not pizza</div><div class="w-body">The biggest bulking mistake is eating everything in sight. A true lean bulk is 200–300 calories above maintenance max. I learned this the hard way after bulking dirty and spending months cutting unnecessary fat. Slow and steady wins the physique.</div></div>
+          <div class="wisdom-card"><div class="w-tag"><div class="w-dot"></div>From the Founder · On Carb Timing</div><div class="w-title">Carbs around your workout — period</div><div class="w-body">Pre-workout carbs are your fuel. Post-workout carbs are your recovery. I always front-loaded carbs around training and kept them lower at night. This one shift changed my body composition more than anything else I did.</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- INSIGHTS -->
+      <div class="nview" id="nv-insights">
+        <div class="screen-header"><div class="screen-title">Weekly <em>Insights</em></div><div class="screen-sub">AI patterns from your nutrition data</div></div>
+        <div style="margin:0 20px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;">
+          <div class="slabel" style="margin-bottom:14px">Calories This Week</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;height:72px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:72%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">M</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:88%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">T</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:65%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">W</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:95%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">T</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:78%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">F</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:55%;background:rgba(100,255,180,0.25);border-radius:5px 5px 0 0"></div></div><div style="font-size:9px;color:var(--text-muted);font-family:'Syne',sans-serif">S</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:80%;background:var(--accent);border-radius:5px 5px 0 0;box-shadow:0 0 8px rgba(100,255,180,0.4)"></div></div><div style="font-size:9px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700">S</div></div>
+          </div>
+        </div>
+        <div style="padding:0 20px;display:flex;flex-direction:column;gap:9px">
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(116,185,255,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💪</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue);margin-bottom:3px">Protein Trend</div><div style="font-size:13px;font-weight:500">Consistently strong protein</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">You've hit 85%+ of your protein goal 5 out of 7 days. This is elite-level consistency and will directly translate to muscle growth.</div></div>
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(255,209,102,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">⚡</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:3px">Carb Timing</div><div style="font-size:13px;font-weight:500">Carbs low on training days</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">On workout days, carb intake averages 190g vs your 280g goal. More fuel pre-training will boost your performance significantly.</div></div>
+          <div class="card"><div style="display:flex;gap:11px;align-items:flex-start;margin-bottom:7px"><div style="width:34px;height:34px;border-radius:11px;background:rgba(100,255,180,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📈</div><div><div style="font-size:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:3px">Risn Score Impact</div><div style="font-size:13px;font-weight:500">Nutrition added +6 to your score</div></div></div><div style="font-size:12px;color:var(--text-dim);line-height:1.7">Consistent logging and hitting protein targets this week boosted your overall Risn Score. Nutrition is now your strongest pillar.</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ RISE ══════════════════ -->
+    <div class="screen" id="s-rise">
+      <!-- Sub-tabs -->
+      <div class="rise-sub-tabs">
+        <button class="rstab active" onclick="switchRise('challenges',this)">🏆 Challenges</button>
+        <button class="rstab" onclick="switchRise('badges',this)">🏅 Badges</button>
+        <button class="rstab" onclick="switchRise('report',this)">📊 Report</button>
+        <button class="rstab" onclick="switchRise('photos',this)">📸 Progress</button>
+        <button class="rstab" onclick="switchRise('sleep',this)">🌙 Sleep</button>
+      </div>
+
+      <!-- CHALLENGES -->
+      <div class="rview active" id="rv-challenges">
+        <div class="rise-hdr"><div class="rise-title">Active <em>Challenges</em></div><div class="rise-sub-txt">Join one. Show up every day. Rise.</div></div>
+        <div class="ch-featured">
+          <div class="ch-featured-glow"></div>
+          <div class="chf-tag"><div class="chf-dot"></div><div class="chf-tag-txt">✦ Featured · 847 Rising</div></div>
+          <div class="chf-name">30-Day Rise Challenge</div>
+          <div class="chf-desc">Build every pillar — mind, body, nutrition, and habits — for 30 days straight.</div>
+          <div class="chf-prog-row"><div class="chf-prog-track"><div class="chf-prog-fill" style="width:47%"></div></div><div class="chf-prog-txt">Day 14 of 30</div></div>
+          <div class="chf-stats">
+            <div><div class="chf-stat-val">14</div><div class="chf-stat-lbl">Days in</div></div>
+            <div><div class="chf-stat-val">16</div><div class="chf-stat-lbl">Days left</div></div>
+            <div><div class="chf-stat-val">847</div><div class="chf-stat-lbl">Joined</div></div>
+            <div><div class="chf-stat-val">🔥 14</div><div class="chf-stat-lbl">Streak</div></div>
+          </div>
+          <button class="chf-btn joined" onclick="openChallenge('30day')">View My Progress →</button>
+        </div>
+        <div class="ch-list">
+          <div class="ch-row" onclick="openChallenge('protein')"><div class="ch-ico" style="background:rgba(116,185,255,0.1)">💪</div><div class="ch-bd"><div class="ch-nm">7-Day Protein Challenge</div><div class="ch-mt">Hit your protein goal 7 days straight</div><div class="ch-btrack"><div class="ch-bfill" style="width:0%;background:var(--blue)"></div></div></div><div class="ch-rgt"><span class="ch-badge-tag" style="background:rgba(116,185,255,0.1);color:var(--blue)">7 Days</span><div class="ch-cnt">312 joined</div></div></div>
+          <div class="ch-row joined" onclick="openChallenge('morning')"><div class="ch-ico" style="background:rgba(255,209,102,0.1)">☀️</div><div class="ch-bd"><div class="ch-nm">21-Day Morning Habit</div><div class="ch-mt">Complete your morning routine for 21 days</div><div class="ch-btrack"><div class="ch-bfill" style="width:67%;background:var(--gold)"></div></div></div><div class="ch-rgt"><span class="ch-badge-tag" style="background:rgba(255,209,102,0.1);color:var(--gold)">Day 14</span><div class="ch-cnt">529 joined</div></div></div>
+          <div class="ch-row" onclick="openChallenge('hydration')"><div class="ch-ico" style="background:rgba(100,255,180,0.1)">💧</div><div class="ch-bd"><div class="ch-nm">14-Day Hydration Reset</div><div class="ch-mt">Hit 8 glasses every day for 2 weeks</div><div class="ch-btrack"><div class="ch-bfill" style="width:0%;background:var(--accent)"></div></div></div><div class="ch-rgt"><span class="ch-badge-tag" style="background:rgba(100,255,180,0.1);color:var(--accent)">14 Days</span><div class="ch-cnt">218 joined</div></div></div>
+          <div class="ch-row" onclick="openChallenge('noscreen')"><div class="ch-ico" style="background:rgba(162,155,254,0.1)">📵</div><div class="ch-bd"><div class="ch-nm">No Screen After 9PM</div><div class="ch-mt">Protect your sleep for 10 nights straight</div><div class="ch-btrack"><div class="ch-bfill" style="width:0%;background:var(--purple)"></div></div></div><div class="ch-rgt"><span class="ch-badge-tag" style="background:rgba(162,155,254,0.1);color:var(--purple)">10 Days</span><div class="ch-cnt">441 joined</div></div></div>
+          <div class="ch-row" onclick="openChallenge('cut')"><div class="ch-ico" style="background:rgba(255,107,107,0.1)">🔥</div><div class="ch-bd"><div class="ch-nm">Founder's 12-Week Cut</div><div class="ch-mt">The exact protocol to reach sub-10% body fat</div><div class="ch-btrack"><div class="ch-bfill" style="width:0%;background:var(--red)"></div></div></div><div class="ch-rgt"><span class="ch-badge-tag" style="background:rgba(255,107,107,0.12);color:var(--red);border:1px solid rgba(255,107,107,0.2)">PRO</span><div class="ch-cnt">94 joined</div></div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- BADGES -->
+      <div class="rview" id="rv-badges">
+        <div class="rise-hdr"><div class="rise-title">Your <em>Badges</em></div><div class="rise-sub-txt">4 of 12 earned — keep rising.</div></div>
+        <div class="badges-earned-lbl">✦ Earned</div>
+        <div class="badges-grid">
+          <div class="badge-card earned" onclick="showToast('🔥 14-Day Warrior — Iron discipline. 14 consecutive days of rising.')"><div class="b-check">✓</div><span class="b-icon">🔥</span><div class="b-name">14-Day Warrior</div><div class="b-desc">14-day streak</div></div>
+          <div class="badge-card earned" onclick="showToast('💪 First Workout — The journey starts with one rep.')"><div class="b-check">✓</div><span class="b-icon">💪</span><div class="b-name">First Workout</div><div class="b-desc">Complete a workout</div></div>
+          <div class="badge-card earned" onclick="showToast('📓 Journal Starter — Self-awareness is the foundation.')"><div class="b-check">✓</div><span class="b-icon">📓</span><div class="b-name">Journal Starter</div><div class="b-desc">First journal entry</div></div>
+          <div class="badge-card earned" onclick="showToast('⬡ Activated — Welcome to Risn. This is where it begins.')"><div class="b-check">✓</div><span class="b-icon">⬡</span><div class="b-name">Activated</div><div class="b-desc">Join Risn</div></div>
+          <div class="badge-card" onclick="showToast('🥇 30-Day Legend — Complete a 30-day streak to unlock. 16 days away!')"><span class="b-icon">🥇</span><div class="b-name">30-Day Legend</div><div class="b-desc">30-day streak</div><div class="b-locked">16 days left</div></div>
+          <div class="badge-card" onclick="showToast('🍗 Protein King — Hit protein goal 7 days in a row.')"><span class="b-icon">🍗</span><div class="b-name">Protein King</div><div class="b-desc">Protein goal ×7</div><div class="b-locked">Not yet</div></div>
+          <div class="badge-card" onclick="showToast('🧘 Zen Master — Complete 10 mindfulness sessions. 6 more to go.')"><span class="b-icon">🧘</span><div class="b-name">Zen Master</div><div class="b-desc">10 mindfulness sessions</div><div class="b-locked">6 more to go</div></div>
+          <div class="badge-card" onclick="showToast('😴 Sleep Champion — Hit sleep goal 5 nights straight.')"><span class="b-icon">😴</span><div class="b-name">Sleep Champ</div><div class="b-desc">5 nights goal sleep</div><div class="b-locked">Not yet</div></div>
+          <div class="badge-card" onclick="showToast('📸 Before & After — Log your first progress photo.')"><span class="b-icon">📸</span><div class="b-name">Before & After</div><div class="b-desc">First progress photo</div><div class="b-locked">Take a photo</div></div>
+          <div class="badge-card" onclick="showToast('⚡ Score 90 — Hit a Risn Score of 90. You are at 82 now.')"><span class="b-icon">⚡</span><div class="b-name">Score 90</div><div class="b-desc">Risn Score ≥ 90</div><div class="b-locked">At 82 now</div></div>
+          <div class="badge-card" onclick="showToast('🏆 Challenger — Finish any Risn challenge end to end.')"><span class="b-icon">🏆</span><div class="b-name">Challenger</div><div class="b-desc">Finish a challenge</div><div class="b-locked">16 days left</div></div>
+          <div class="badge-card" onclick="showToast('👑 Founder Cut — Complete the 12-Week Founder Cut. PRO only.')"><span class="b-icon">👑</span><div class="b-name">Founder Cut</div><div class="b-desc">12-Week Cut done</div><div class="b-locked">PRO only</div></div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- RISE REPORT -->
+      <div class="rview" id="rv-report">
+        <div class="rise-hdr"><div class="rise-title">Weekly <em>Rise Report</em></div><div class="rise-sub-txt">Mar 17 – 23 · Week 12</div></div>
+        <div class="report-wrap">
+          <div class="rr-wm">82</div>
+          <div class="rr-wk">✦ WEEK 12 SUMMARY</div>
+          <div class="rr-hl">Strong week. Keep rising.</div>
+          <div class="rr-sub">Your best Risn Score week yet — up 6 points from last week.</div>
+          <div class="rr-scores">
+            <div class="rr-score-item"><div class="rr-sv" style="color:var(--accent)">82</div><div class="rr-sl">Avg Score</div><div class="rr-sd" style="color:var(--accent)">↑ +6</div></div>
+            <div class="rr-score-item"><div class="rr-sv" style="color:var(--gold)">🔥 14</div><div class="rr-sl">Streak</div><div class="rr-sd" style="color:var(--gold)">Best ever</div></div>
+            <div class="rr-score-item"><div class="rr-sv" style="color:var(--blue)">88</div><div class="rr-sl">Peak Day</div><div class="rr-sd" style="color:var(--text-muted)">Thursday</div></div>
+          </div>
+          <div class="rr-chart">
+            <div class="rr-bcol"><div class="rr-bar" style="height:72%;background:rgba(100,255,180,0.25);border-radius:4px 4px 0 0"></div><div class="rr-bday">M</div></div>
+            <div class="rr-bcol"><div class="rr-bar" style="height:80%;background:rgba(100,255,180,0.25);border-radius:4px 4px 0 0"></div><div class="rr-bday">T</div></div>
+            <div class="rr-bcol"><div class="rr-bar" style="height:68%;background:rgba(100,255,180,0.25);border-radius:4px 4px 0 0"></div><div class="rr-bday">W</div></div>
+            <div class="rr-bcol best"><div class="rr-bar" style="height:100%;background:var(--accent);border-radius:4px 4px 0 0;box-shadow:0 0 8px rgba(100,255,180,0.4)"></div><div class="rr-bday">T</div></div>
+            <div class="rr-bcol"><div class="rr-bar" style="height:85%;background:rgba(100,255,180,0.25);border-radius:4px 4px 0 0"></div><div class="rr-bday">F</div></div>
+            <div class="rr-bcol"><div class="rr-bar" style="height:60%;background:rgba(100,255,180,0.25);border-radius:4px 4px 0 0"></div><div class="rr-bday">S</div></div>
+            <div class="rr-bcol best"><div class="rr-bar" style="height:90%;background:var(--accent);opacity:0.7;border-radius:4px 4px 0 0"></div><div class="rr-bday" style="color:var(--accent);font-weight:700">S</div></div>
+          </div>
+          <div class="rr-highs">
+            <div class="rr-high"><div class="rr-high-ico">💪</div><div class="rr-high-txt"><strong>4 workouts completed</strong> — most consistent training week yet.</div></div>
+            <div class="rr-high"><div class="rr-high-ico">🍗</div><div class="rr-high-txt">Protein goal hit <strong>5 of 7 days.</strong> Elite consistency.</div></div>
+            <div class="rr-high"><div class="rr-high-ico">🧘</div><div class="rr-high-txt">Meditated <strong>every morning</strong> — 14-day mindfulness streak.</div></div>
+            <div class="rr-high"><div class="rr-high-ico">⚠️</div><div class="rr-high-txt">Sleep dropped Saturday — <strong>below 7 hours.</strong> Protect that recovery.</div></div>
+          </div>
+          <button class="share-report-btn" onclick="shareRiseReport()">📤 Share My Rise Report</button>
+          <button class="ai-report-btn" onclick="openAIReport()">🤖 Get AI Deep Analysis</button>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- PROGRESS PHOTOS -->
+      <div class="rview" id="rv-photos">
+        <div class="rise-hdr"><div class="rise-title">Progress <em>Photos</em></div><div class="rise-sub-txt">See your transformation week by week.</div></div>
+        <div class="photo-hdr-row">
+          <div class="slabel" style="margin:0">Timeline</div>
+          <button class="add-photo-btn" onclick="openPhotoModal()">📸 + Add Check-in</button>
+        </div>
+        <div class="photo-timeline" id="risePhotoTimeline"></div>
+        <div class="photo-empty-state" id="risePhotoEmpty">
+          <span class="pes-icon">📸</span>
+          <div class="pes-title">Start your visual journey</div>
+          <div class="pes-sub">Log weekly photos and watch your transformation unfold. This is the most powerful motivator — and the most shareable content you'll ever post.</div>
+          <button class="pes-btn" onclick="openPhotoModal()">Take First Photo</button>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- SLEEP -->
+      <div class="rview" id="rv-sleep">
+        <div class="rise-hdr"><div class="rise-title">Sleep <em>Tracker</em></div><div class="rise-sub-txt">Recovery is where you actually grow.</div></div>
+        <div class="sleep-ring-card">
+          <div class="slp-top">
+            <div class="slp-ring">
+              <svg class="slp-svg" viewBox="0 0 100 100">
+                <circle class="slp-bg" cx="50" cy="50" r="44"/>
+                <circle class="slp-fill" cx="50" cy="50" r="44" id="sleepRingFill"/>
+              </svg>
+              <div class="slp-center"><div class="slp-hrs" id="riseSlpHrs">7h 20m</div><div class="slp-lbl">tonight</div></div>
+            </div>
+            <div class="slp-stages">
+              <div class="slp-stage"><div class="slp-dot" style="background:#a29bfe"></div><div class="slp-sname">Deep</div><div class="slp-strack"><div class="slp-sfill" style="width:65%;background:#a29bfe"></div></div><div class="slp-sval">1h 42m</div></div>
+              <div class="slp-stage"><div class="slp-dot" style="background:var(--blue)"></div><div class="slp-sname">REM</div><div class="slp-strack"><div class="slp-sfill" style="width:45%;background:var(--blue)"></div></div><div class="slp-sval">1h 18m</div></div>
+              <div class="slp-stage"><div class="slp-dot" style="background:var(--accent)"></div><div class="slp-sname">Light</div><div class="slp-strack"><div class="slp-sfill" style="width:80%;background:var(--accent)"></div></div><div class="slp-sval">4h 20m</div></div>
+              <div class="slp-stage"><div class="slp-dot" style="background:rgba(255,255,255,0.18)"></div><div class="slp-sname">Awake</div><div class="slp-strack"><div class="slp-sfill" style="width:15%;background:rgba(255,255,255,0.12)"></div></div><div class="slp-sval">0h 18m</div></div>
+            </div>
+          </div>
+          <div class="slp-footer">
+            <div class="slpf-item"><div class="slpf-val" style="color:var(--blue)">73</div><div class="slpf-lbl">Sleep Score</div></div>
+            <div class="slpf-item"><div class="slpf-val" style="color:var(--accent)">92%</div><div class="slpf-lbl">Of Goal</div></div>
+            <div class="slpf-item"><div class="slpf-val" style="color:var(--gold)">7.2h</div><div class="slpf-lbl">Week Avg</div></div>
+            <div class="slpf-item"><div class="slpf-val" style="color:var(--purple)">8h</div><div class="slpf-lbl">Goal</div></div>
+          </div>
+        </div>
+        <div class="sleep-time-cards">
+          <div class="stc"><div class="stc-lbl">🌙 Bedtime</div><div class="stc-time" id="riseSlpBed">10:45 PM</div><div class="stc-sub">Last night</div><button class="stc-edit" onclick="editSleepTime('bed')">Edit →</button></div>
+          <div class="stc"><div class="stc-lbl">☀️ Wake Up</div><div class="stc-time" id="riseSlpWake">6:05 AM</div><div class="stc-sub">This morning</div><button class="stc-edit" onclick="editSleepTime('wake')">Edit →</button></div>
+        </div>
+        <div class="sleep-week-card">
+          <div class="swc-title">Hours This Week</div>
+          <div class="swc-bars">
+            <div class="swc-col"><div class="swc-bar" style="height:75%;background:rgba(116,185,255,0.3);border-radius:5px 5px 0 0"></div><div class="swc-day">M</div></div>
+            <div class="swc-col"><div class="swc-bar" style="height:88%;background:rgba(116,185,255,0.3);border-radius:5px 5px 0 0"></div><div class="swc-day">T</div></div>
+            <div class="swc-col"><div class="swc-bar" style="height:65%;background:rgba(116,185,255,0.3);border-radius:5px 5px 0 0"></div><div class="swc-day">W</div></div>
+            <div class="swc-col"><div class="swc-bar" style="height:95%;background:rgba(116,185,255,0.3);border-radius:5px 5px 0 0"></div><div class="swc-day">T</div></div>
+            <div class="swc-col"><div class="swc-bar" style="height:80%;background:rgba(116,185,255,0.3);border-radius:5px 5px 0 0"></div><div class="swc-day">F</div></div>
+            <div class="swc-col"><div class="swc-bar" style="height:50%;background:rgba(255,107,107,0.35);border-radius:5px 5px 0 0"></div><div class="swc-day">S</div></div>
+            <div class="swc-col today"><div class="swc-bar" style="height:92%;background:var(--blue);border-radius:5px 5px 0 0;box-shadow:0 0 8px rgba(116,185,255,0.4)"></div><div class="swc-day">S</div></div>
+          </div>
+        </div>
+        <div style="padding:0 20px;display:flex;flex-direction:column;gap:9px">
+          <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:10px;background:rgba(162,155,254,0.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">😴</div><div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--purple);margin-bottom:3px;letter-spacing:0.12em;text-transform:uppercase">Deep Sleep Low</div><div style="font-size:11px;color:var(--text-dim);line-height:1.7">Deep sleep is below the 90 min optimal. Cut alcohol and heavy meals within 3 hours of bed — both destroy deep sleep quality.</div></div></div>
+          <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:10px;background:rgba(255,209,102,0.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">📵</div><div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);margin-bottom:3px;letter-spacing:0.12em;text-transform:uppercase">Saturday Pattern</div><div style="font-size:11px;color:var(--text-dim);line-height:1.7">Your Saturday sleep is consistently your worst. Only 6.2h average — social habits are hurting Sunday performance.</div></div></div>
+          <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:10px;background:rgba(100,255,180,0.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">✅</div><div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);margin-bottom:3px;letter-spacing:0.12em;text-transform:uppercase">Consistency Win</div><div style="font-size:11px;color:var(--text-dim);line-height:1.7">Your weeknight bedtime is within 30 minutes consistent. That regularity alone boosts sleep quality more than extra hours.</div></div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div><!-- /s-rise -->
+
+  </div><!-- /screens -->
+
+  <!-- BOTTOM NAV — 5 tabs -->
+  <div class="bottom-nav" id="bottomNav">
+    <div class="nav-item active" onclick="switchTab('home')" id="nav-home"><div class="nav-dot"></div><div class="nav-icon">⬡</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="switchTab('coach');clearCoachBadge()" id="nav-coach">
+      <div class="nav-dot"></div>
+      <div style="position:relative;display:inline-block">
+        <div class="nav-icon">🤖</div>
+        <div id="coachBadge" style="position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);"></div>
+      </div>
+      <div class="nav-label">Coach</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('nutrition')" id="nav-nutrition"><div class="nav-dot"></div><div class="nav-icon">🍎</div><div class="nav-label">Nutrition</div></div>
+    <div class="nav-item" onclick="switchTab('fitness')" id="nav-fitness"><div class="nav-dot"></div><div class="nav-icon">💪</div><div class="nav-label">Fitness</div></div>
+    <div class="nav-item" onclick="switchTab('rise')" id="nav-rise"><div class="nav-dot"></div><div class="nav-icon">⚡</div><div class="nav-label">Rise</div></div>
+  </div>
+
+  <!-- LOG FOOD MODAL -->
+  <div class="modal" id="logModal">
+    <div class="modal-hdr"><div class="modal-title">Log <em>Food</em></div><div class="modal-close" onclick="closeModal()">×</div></div>
+    <div class="log-method-tabs">
+      <div class="lmt active" id="lmt-search" onclick="switchLogTab('search')"><span class="lmt-icon">🔍</span>Search</div>
+      <div class="lmt" id="lmt-photo" onclick="switchLogTab('photo')"><span class="lmt-icon">📸</span>Photo AI</div>
+    </div>
+    <div class="meal-sel-row" id="mealSelRow">
+      <div class="msb sel" onclick="setMeal(this,'breakfast')">☀️ Breakfast</div>
+      <div class="msb" onclick="setMeal(this,'lunch')">🌤 Lunch</div>
+      <div class="msb" onclick="setMeal(this,'dinner')">🌙 Dinner</div>
+      <div class="msb" onclick="setMeal(this,'snacks')">🍎 Snacks</div>
+    </div>
+    <!-- Search -->
+    <div class="modal-content" id="mc-search">
+      <div class="search-bar">
+        <input class="search-input" id="foodSearch" placeholder="Search food (e.g. chicken breast)..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="search-go" onclick="doSearch()">→</button>
+      </div>
+      <div class="search-spinner-wrap" id="searchSpinner"><div class="search-spinner"></div><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif">Searching USDA database...</div></div>
+      <div class="search-results" id="searchResults"><div class="no-results">Search any food above.<br>Powered by USDA FoodData Central.</div></div>
+      <div class="add-panel" id="addPanel">
+        <div class="ap-name" id="apName">—</div>
+        <div class="ap-sub" id="apSub">Per 100g</div>
+        <div class="ap-macro-grid">
+          <div class="ap-macro"><div class="ap-m-val" id="apCal" style="color:var(--accent)">—</div><div class="ap-m-lbl">Calories</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apP" style="color:var(--blue)">—</div><div class="ap-m-lbl">Protein</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apC" style="color:var(--gold)">—</div><div class="ap-m-lbl">Carbs</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="apF" style="color:var(--red)">—</div><div class="ap-m-lbl">Fat</div></div>
+        </div>
+        <div class="ap-serving-row"><span class="ap-serving-lbl">Serving:</span><input class="ap-serving-input" type="number" id="apServing" value="100" min="1" max="2000" oninput="recalcServing()"><span class="ap-serving-unit">g</span></div>
+        <button class="ap-confirm-btn" onclick="confirmAdd()">+ Add to Log</button>
+      </div>
+    </div>
+    <!-- Photo -->
+    <div class="modal-content" id="mc-photo" style="display:none">
+      <div class="photo-zone" onclick="document.getElementById('photoInput').click()"><span class="pz-icon">📸</span><div class="pz-title">Snap or upload your meal</div><div class="pz-sub">Risn AI identifies the food<br>and estimates your macros</div></div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(this)" style="display:none">
+      <div class="photo-preview" id="photoPreview"><img id="photoImg" src="" alt="meal"></div>
+      <div class="ai-analyzing" id="aiAnalyzing"><div class="an-spinner"></div><div class="an-txt">Analyzing your meal...<br>Identifying foods & macros</div></div>
+      <div class="add-panel" id="photoPanel">
+        <div class="ap-name" id="ppName">—</div>
+        <div class="ap-sub" id="ppSub">AI Estimated</div>
+        <div class="ap-macro-grid">
+          <div class="ap-macro"><div class="ap-m-val" id="ppCal" style="color:var(--accent)">—</div><div class="ap-m-lbl">Calories</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppP" style="color:var(--blue)">—</div><div class="ap-m-lbl">Protein</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppC" style="color:var(--gold)">—</div><div class="ap-m-lbl">Carbs</div></div>
+          <div class="ap-macro"><div class="ap-m-val" id="ppF" style="color:var(--red)">—</div><div class="ap-m-lbl">Fat</div></div>
+        </div>
+        <div class="ap-sub" id="ppConf" style="color:var(--accent);margin-bottom:10px"></div>
+        <button class="ap-confirm-btn" onclick="confirmPhoto()">+ Add to Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISE MODALS -->
+  <!-- Challenge modal -->
+  <div class="ch-modal" id="chModal">
+    <div class="ch-mhdr"><div class="ch-mtitle" id="chModalTitle">Challenge</div><div class="ch-mclose" onclick="document.getElementById('chModal').classList.remove('show')">×</div></div>
+    <div class="ch-mbody">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px" id="chModalDesc"></div>
+      <div class="slabel">Your Progress — Tap a day to check in</div>
+      <div class="ch-day-grid" id="chDayGrid"></div>
+      <div class="ch-stats-row">
+        <div class="ch-stat-box"><div class="ch-stat-v" style="color:var(--accent)" id="chDone">0</div><div class="ch-stat-l">Done</div></div>
+        <div class="ch-stat-box"><div class="ch-stat-v" style="color:var(--gold)" id="chStreak">0</div><div class="ch-stat-l">Streak</div></div>
+        <div class="ch-stat-box"><div class="ch-stat-v" style="color:var(--text-dim)" id="chLeft">0</div><div class="ch-stat-l">Left</div></div>
+      </div>
+      <button class="ch-checkin-btn" id="chCheckinBtn" onclick="checkInToday()">✓ Check In Today</button>
+    </div>
+  </div>
+  <!-- Badge unlock overlay -->
+  <div class="badge-unlock" id="badgeUnlock">
+    <div class="bu-ico" id="buIco">🏅</div>
+    <div class="bu-ttl">Badge Unlocked!</div>
+    <div class="bu-sub" id="buSubTxt">You earned a new badge</div>
+    <button class="bu-close" onclick="document.getElementById('badgeUnlock').classList.remove('show')">Awesome! →</button>
+  </div>
+  <!-- AI Report modal -->
+  <div class="ai-report-modal" id="aiReportModal">
+    <div class="arm-hdr"><div class="arm-title">AI <em>Deep Analysis</em></div><div class="arm-close" onclick="document.getElementById('aiReportModal').classList.remove('show')">×</div></div>
+    <div class="arm-body">
+      <div class="arm-loading" id="armLoading"><div class="arm-spinner"></div><div class="arm-spinner-txt">Analyzing your week...<br>Building your personal report</div></div>
+      <div class="arm-content" id="armContent"></div>
+    </div>
+  </div>
+  <!-- Photo add modal -->
+  <div class="photo-add-modal" id="photoAddModal">
+    <div class="pam-hdr"><div class="pam-title">Add <em>Check-in</em></div><div class="pam-close" onclick="closePhotoModal()">×</div></div>
+    <div class="pam-body">
+      <div class="slabel">Take 3 photos — Front, Side, Back</div>
+      <div class="photo-slots">
+        <div class="p-slot" id="rSlot-front" onclick="triggerSlotCapture('front')"><span class="p-slot-ico">📷</span><div class="p-slot-lbl">Front</div></div>
+        <div class="p-slot" id="rSlot-side" onclick="triggerSlotCapture('side')"><span class="p-slot-ico">📷</span><div class="p-slot-lbl">Side</div></div>
+        <div class="p-slot" id="rSlot-back" onclick="triggerSlotCapture('back')"><span class="p-slot-ico">📷</span><div class="p-slot-lbl">Back</div></div>
+      </div>
+      <input type="file" id="rPhotoCapture" accept="image/*" capture="environment" style="display:none" onchange="handleSlotCapture(this)">
+      <div class="pam-inputs">
+        <div class="pam-input-card"><div class="pam-input-lbl">⚖️ Weight (lbs)</div><input class="pam-input-field" id="rPmWeight" type="number" placeholder="185"></div>
+        <div class="pam-input-card"><div class="pam-input-lbl">📏 Body Fat %</div><input class="pam-input-field" id="rPmBF" type="number" placeholder="14"></div>
+      </div>
+      <button class="pam-save-btn" onclick="savePhotoCheckIn()">Save Check-in →</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><div style="flex:1"><div class="toast-lbl">Risn</div><div class="toast-msg" id="toastMsg"></div></div><div class="toast-x" onclick="hideToast()">×</div></div>
+</div>
+
+<script>
+// ── CLOCK ──
+function tick(){const n=new Date();document.getElementById('clk').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
+tick();setInterval(tick,30000);
+
+// ── BOTTOM TABS ──
+function switchTab(t){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`s-${t}`).classList.add('active');
+  const nav=document.getElementById(`nav-${t}`);
+  if(nav)nav.classList.add('active');
+}
+
+// ── COACH BADGE ──
+function clearCoachBadge(){
+  const b=document.getElementById('coachBadge');
+  if(b)b.style.display='none';
+}
+
+// ── NUTRITION SUB-TABS ──
+function switchNutrTab(v,btn){
+  document.querySelectorAll('#s-nutrition .nview').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+  document.getElementById(`nv-${v}`).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── RISE SUB-TABS ──
+function switchRise(v,btn){
+  document.querySelectorAll('#s-rise .rview').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.rstab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('rv-'+v).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── HABITS with localStorage ──
+function toggleHabit(el){
+  const was=el.classList.contains('done');
+  el.classList.toggle('done');
+  const chk=el.querySelector('.hcheck');
+  const id='risn_h_'+el.querySelector('.h-name').textContent.replace(/\s+/g,'_');
+  if(!was){
+    chk.textContent='✓';
+    localStorage.setItem(id,'done');
+    showToast(`"${el.querySelector('.h-name').textContent}" complete! Risn Score updated 🔥`);
+  } else {
+    chk.textContent='';
+    localStorage.removeItem(id);
+  }
+}
+// Restore habits on load
+document.querySelectorAll('.habit-item').forEach(el=>{
+  const id='risn_h_'+el.querySelector('.h-name').textContent.replace(/\s+/g,'_');
+  if(localStorage.getItem(id)==='done'){el.classList.add('done');el.querySelector('.hcheck').textContent='✓';}
+});
+
+// ── COACH ──
+const moodMap={great:"Love that energy! On days like this momentum is your superpower. What's your biggest win you want today?",good:"Good is solid ground. Consistency here builds everything. What would make today feel like a real win?",okay:"Okay is honest — and honesty is where change starts. What's one small thing that could shift your energy?",low:"Thank you for telling me. Low days don't define the journey. I'm here. What's weighing on you most right now?",stressed:"Stress is a signal something matters. Let's slow it down first — take one breath. What's piling up on you?",anxious:"You're not alone in this. Let's ground you: name 3 things you can see around you right now."};
+let chatHistory=[];
+function pickMood(el,m){
+  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(()=>addAI(moodMap[m]),300);
+}
+function sendQuick(t){document.getElementById('msgInput').value=t;sendMsg();document.getElementById('quickRow').style.display='none';}
+function addUser(t){const n=new Date(),ts=`${n.getHours()}:${String(n.getMinutes()).padStart(2,'0')}`;const el=document.createElement('div');el.className='msg user';el.innerHTML=`<div class="bubble">${t}</div><div class="msg-time">${ts}</div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function addAI(t){const n=new Date(),ts=`${n.getHours()}:${String(n.getMinutes()).padStart(2,'0')}`;const el=document.createElement('div');el.className='msg ai';el.innerHTML=`<div class="bubble">${t}</div><div class="msg-time">${ts}</div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function showTyping(){const el=document.createElement('div');el.className='msg ai';el.id='typing';el.innerHTML=`<div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;document.getElementById('chatMsgs').appendChild(el);scrollChat();}
+function scrollChat(){const c=document.getElementById('chatMsgs');c.scrollTop=c.scrollHeight;}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+async function sendMsg(){
+  const inp=document.getElementById('msgInput');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.style.height='auto';
+  addUser(txt);
+  document.getElementById('sendBtn').disabled=true;
+  showTyping();
+  chatHistory.push({role:'user',content:txt});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:"You are Risn's AI wellness coach — warm, wise, direct, and emotionally intelligent. The founder of Risn went from obese to sub-10% body fat and nearly appeared in Men's Health. Help with mental health, fitness, nutrition, and habits with real expertise. Be personal and concise — 2-4 sentences max. Never be generic. The user is on a 14-day streak with a Risn Score of 82.",messages:chatHistory})});
+    const d=await res.json();
+    const reply=d.content?.[0]?.text||"I'm here with you. One step at a time.";
+    chatHistory.push({role:'assistant',content:reply});
+    document.getElementById('typing')?.remove();
+    addAI(reply);
+  }catch{document.getElementById('typing')?.remove();addAI("You showed up today and that's what matters most. Let's take it one step at a time — what's most important right now?");}
+  document.getElementById('sendBtn').disabled=false;
+}
+
+// ── FITNESS ──
+let fState={type:null,split:null,level:null};
+const typeLabels={weights:'🏋️ Weights',calisthenics:'🤸 Calisthenics',mix:'⚡ Mix'};
+const splitLabels={ppl:'🔄 Push/Pull/Legs',fullbody:'💪 Full Body','upper-lower':'↕️ Upper/Lower',bro:'🎯 One Body Part','2day':'✌️ 2-Part Split'};
+const levelLabels={beginner:'🌱 Beginner',intermediate:'🔥 Intermediate',advanced:'⚡ Advanced'};
+
+function selType(t){
+  fState={type:t,split:null,level:null};
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="tc-"]').forEach(c=>c.textContent='');
+  document.getElementById(`type-${t}`).classList.add('selected');
+  document.getElementById(`tc-${t}`).textContent='✓';
+  document.querySelectorAll('.split-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="sc-"]').forEach(c=>c.textContent='');
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('levelSec').classList.remove('vis');
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('workoutResult').classList.remove('vis');
+  document.getElementById('workoutResult').innerHTML='';
+  document.getElementById('genSpinner').classList.remove('show');
+  if(t==='weights'||t==='mix'){document.getElementById('splitSec').classList.add('vis');}
+  else{document.getElementById('splitSec').classList.remove('vis');setTimeout(()=>{document.getElementById('levelSec').classList.add('vis');scrollTo('levelSec');},200);}
+}
+function selSplit(s){
+  fState.split=s;fState.level=null;
+  document.querySelectorAll('.split-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('[id^="sc-"]').forEach(c=>c.textContent='');
+  document.getElementById(`sp-${s}`).classList.add('selected');
+  document.getElementById(`sc-${s}`).textContent='✓';
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('levelSec').classList.add('vis');
+  setTimeout(()=>scrollTo('levelSec'),200);
+}
+function selLevel(l){
+  fState.level=l;
+  document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById(`lv-${l}`).classList.add('selected');
+  buildSum();
+  document.getElementById('genSec').classList.add('vis');
+  setTimeout(()=>scrollTo('genSec'),200);
+}
+function buildSum(){
+  const r=document.getElementById('sumRow');
+  let h='';
+  if(fState.type)h+=`<span class="sum-chip sum-a">${typeLabels[fState.type]}</span>`;
+  if(fState.split)h+=`<span class="sum-chip sum-g">${splitLabels[fState.split]}</span>`;
+  if(fState.level)h+=`<span class="sum-chip sum-b">${levelLabels[fState.level]}</span>`;
+  r.innerHTML=h;
+}
+function scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+
+async function generateWorkout(){
+  const{type,split,level}=fState;
+  if(!type||!level){showToast('Pick your style and level first 💪');return;}
+  if((type==='weights'||type==='mix')&&!split){showToast('Choose your split to continue');return;}
+  document.getElementById('genSec').classList.remove('vis');
+  document.getElementById('workoutResult').classList.remove('vis');
+  document.getElementById('workoutResult').innerHTML='';
+  document.getElementById('genSpinner').classList.add('show');
+  const splitTxt=split?`, using a ${splitLabels[split]} split`:'';
+  const prompt=`Create a ${levelLabels[level]} ${typeLabels[type]} workout${splitTxt}. Return ONLY raw JSON: {"title":"name","duration":"X min","intensity":"High/Medium/Low","coachNote":"1-2 sentence motivational note","exercises":[{"name":"Exercise","target":"muscles","sets":"3 × 10","isRest":false}]}. Include 6-9 exercises, 1-2 rest entries. No markdown, pure JSON.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are Risn\'s fitness AI. Return ONLY valid JSON. No markdown, no explanation.',messages:[{role:'user',content:prompt}]})});
+    const d=await res.json();
+    const raw=d.content?.[0]?.text||'{}';
+    const w=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    document.getElementById('genSpinner').classList.remove('show');
+    renderWorkout(w);
+  }catch{
+    document.getElementById('genSpinner').classList.remove('show');
+    renderWorkout(getFallback(type,split,level));
+  }
+}
+function renderWorkout(w){
+  const exH=w.exercises.map((ex,i)=>`<div class="ex-card ${ex.isRest?'rest-card':''}"><div class="ex-num">${ex.isRest?'⏸':i+1}</div><div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-target">${ex.target}</div></div><div class="ex-sets">${ex.sets}</div></div>`).join('');
+  document.getElementById('workoutResult').innerHTML=`<div class="wh-card"><div class="wh-glow"></div><div class="wh-ai-tag"><div class="ai-dot"></div><div class="ai-tag-txt">AI Generated · Built for you</div></div><div class="wh-title">${w.title}</div><div class="wh-meta-row"><span class="wh-meta-chip">⏱ ${w.duration}</span><span class="wh-meta-chip">⚡ ${w.intensity}</span><span class="wh-meta-chip">${typeLabels[fState.type]}</span>${fState.split?`<span class="wh-meta-chip">${splitLabels[fState.split]}</span>`:''}<span class="wh-meta-chip">${levelLabels[fState.level]}</span></div><button class="start-btn">Start Workout →</button></div><div class="coach-note"><div class="cn-note-avatar">🤖</div><div><div class="cn-note-lbl">✦ Coach says</div><div class="cn-note-txt">${w.coachNote}</div></div></div><div class="ex-list-lbl">${w.exercises.filter(e=>!e.isRest).length} Exercises · ${w.duration}</div>${exH}<button class="rebuild-btn" onclick="rebuildWorkout()">↺ Generate Different Workout</button>`;
+  document.getElementById('workoutResult').classList.add('vis');
+  setTimeout(()=>scrollTo('workoutResult'),100);
+}
+function rebuildWorkout(){buildSum();document.getElementById('genSec').classList.add('vis');document.getElementById('workoutResult').classList.remove('vis');setTimeout(()=>{document.getElementById('workoutResult').innerHTML='';},500);scrollTo('genSec');}
+function getFallback(type,split){
+  const w={weights:{ppl:{title:"Push Day Power",duration:"50 min",intensity:"High",coachNote:"Push muscles firing today — chest, shoulders, triceps. Start heavy and finish strong.",exercises:[{name:"Barbell Bench Press",target:"Chest primary",sets:"4 × 6",isRest:false},{name:"Incline Dumbbell Press",target:"Upper chest",sets:"3 × 10",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Overhead Press",target:"Shoulders",sets:"4 × 8",isRest:false},{name:"Lateral Raises",target:"Lateral deltoids",sets:"3 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Skull Crushers",target:"Triceps isolation",sets:"3 × 12",isRest:false},{name:"Cable Pushdown",target:"Triceps finisher",sets:"3 × 15",isRest:false}]},fullbody:{title:"Full Body Strength",duration:"55 min",intensity:"High",coachNote:"Every major muscle group today. This session builds your foundation.",exercises:[{name:"Barbell Squat",target:"Quads · Glutes · Core",sets:"4 × 8",isRest:false},{name:"Bench Press",target:"Chest · Triceps",sets:"4 × 8",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Barbell Row",target:"Back · Biceps",sets:"4 × 8",isRest:false},{name:"Romanian Deadlift",target:"Hamstrings · Glutes",sets:"3 × 10",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Overhead Press",target:"Shoulders",sets:"3 × 10",isRest:false},{name:"Plank Hold",target:"Core stability",sets:"3 × 45s",isRest:false}]}},calisthenics:{title:"Bodyweight Power",duration:"40 min",intensity:"Medium-High",coachNote:"Your body is the gym. Control every single rep and feel every muscle working.",exercises:[{name:"Pull-ups",target:"Back · Biceps",sets:"4 × max",isRest:false},{name:"Push-up Variations",target:"Chest · Triceps · Core",sets:"4 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Bodyweight Squat",target:"Quads · Glutes",sets:"3 × 20",isRest:false},{name:"Dips",target:"Triceps · Chest",sets:"3 × 12",isRest:false},{name:"Rest",target:"Recovery",sets:"45 sec",isRest:true},{name:"Hollow Body Hold",target:"Core tension",sets:"3 × 30s",isRest:false},{name:"Mountain Climbers",target:"Cardio · Core",sets:"3 × 45s",isRest:false}]},mix:{title:"Hybrid Power Session",duration:"50 min",intensity:"High",coachNote:"Iron and bodyweight together. Functional, strong, and built to last.",exercises:[{name:"Barbell Deadlift",target:"Posterior chain",sets:"4 × 5",isRest:false},{name:"Pull-ups",target:"Back · Biceps",sets:"4 × 8",isRest:false},{name:"Rest",target:"Recovery",sets:"90 sec",isRest:true},{name:"Dumbbell Press",target:"Chest · Shoulders",sets:"3 × 10",isRest:false},{name:"Push-up Finisher",target:"Chest · Triceps",sets:"3 × 15",isRest:false},{name:"Rest",target:"Recovery",sets:"60 sec",isRest:true},{name:"Goblet Squat",target:"Quads · Glutes",sets:"3 × 12",isRest:false},{name:"Plank to Push-up",target:"Core · Shoulders",sets:"3 × 10",isRest:false}]}};
+  if(type==='weights'&&split&&w.weights[split])return w.weights[split];
+  if(type==='weights')return w.weights.fullbody;
+  if(type==='calisthenics')return w.calisthenics;
+  return w.mix;
+}
+
+// ── NUTRITION ──
+let activeMeal='breakfast';
+let selFood=null;
+
+function selGoal(g){
+  document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('[id^="gchk-"]').forEach(c=>c.textContent='');
+  document.getElementById(`gc-${g}`).classList.add('active');
+  document.getElementById(`gchk-${g}`).textContent='✓';
+  document.getElementById('goalPill').textContent=`🎯 ${g.charAt(0).toUpperCase()+g.slice(1)}`;
+  showToast(`Goal updated to ${g}. Macro targets adjusted.`);
+}
+function updSlider(el,id,unit){
+  const v=parseInt(el.value),pct=((v-parseInt(el.min))/(parseInt(el.max)-parseInt(el.min)))*100;
+  const col=el.style.background.match(/(var\([^)]+\))/)?.[1]||'var(--accent)';
+  el.style.background=`linear-gradient(to right,${col} ${pct}%,rgba(255,255,255,0.1) ${pct}%)`;
+  document.getElementById(id).textContent=unit==='kcal'?v.toLocaleString()+' kcal':v+'g';
+}
+
+// Modal
+function openModal(tab){document.getElementById('logModal').classList.add('show');switchLogTab(tab);}
+function openModalForMeal(tab,meal){openModal(tab);setMealById(meal);}
+function closeModal(){
+  document.getElementById('logModal').classList.remove('show');
+  document.getElementById('foodSearch').value='';
+  document.getElementById('searchResults').innerHTML='<div class="no-results">Search any food above.<br>Powered by USDA FoodData Central.</div>';
+  document.getElementById('addPanel').classList.remove('show');
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('aiAnalyzing').classList.remove('show');
+  document.getElementById('photoPanel').classList.remove('show');
+  selFood=null;
+}
+function switchLogTab(t){
+  ['search','photo'].forEach(x=>{document.getElementById(`lmt-${x}`).classList.toggle('active',x===t);document.getElementById(`mc-${x}`).style.display=x===t?'block':'none';});
+}
+function setMeal(btn,meal){document.querySelectorAll('.msb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');activeMeal=meal;}
+function setMealById(meal){document.querySelectorAll('.msb').forEach(b=>{if(b.getAttribute('onclick')?.includes(meal))b.classList.add('sel');else b.classList.remove('sel');});activeMeal=meal;}
+
+// USDA Search
+async function doSearch(){
+  const q=document.getElementById('foodSearch').value.trim();if(!q)return;
+  document.getElementById('searchSpinner').style.display='block';
+  document.getElementById('searchResults').innerHTML='';
+  document.getElementById('addPanel').classList.remove('show');selFood=null;
+  try{
+    const res=await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(q)}&pageSize=8&dataType=Foundation,SR%20Legacy,Branded&api_key=DEMO_KEY`);
+    const d=await res.json();
+    document.getElementById('searchSpinner').style.display='none';
+    if(!d.foods?.length){document.getElementById('searchResults').innerHTML='<div class="no-results">No results found. Try a different term.</div>';return;}
+    renderSearchResults(d.foods.slice(0,8));
+  }catch{document.getElementById('searchSpinner').style.display='none';renderSearchResults(getFallbackFoods(q));}
+}
+function getN(nutrients,id){const n=nutrients?.find(x=>x.nutrientId===id||x.nutrientNumber===String(id));return n?Math.round(n.value||0):0;}
+function renderSearchResults(foods){
+  window._foods=foods;
+  document.getElementById('searchResults').innerHTML=foods.map((f,i)=>{
+    const cal=getN(f.foodNutrients,1008)||getN(f.foodNutrients,'208');
+    const p=getN(f.foodNutrients,1003)||getN(f.foodNutrients,'203');
+    const c=getN(f.foodNutrients,1005)||getN(f.foodNutrients,'205');
+    const fat=getN(f.foodNutrients,1004)||getN(f.foodNutrients,'204');
+    return `<div class="result-item" onclick="selectFood(${i})"><div class="ri-name">${f.description}</div><div class="ri-brand">${f.brandOwner||f.dataType||'USDA'} · per 100g</div><div class="ri-macros"><span class="fm-chip fm-cal">${cal} kcal</span><span class="fm-chip fm-p">P:${p}g</span><span class="fm-chip fm-c">C:${c}g</span><span class="fm-chip fm-f">F:${fat}g</span></div></div>`;
+  }).join('');
+}
+function selectFood(i){
+  const f=window._foods[i];
+  const cal=getN(f.foodNutrients,1008)||getN(f.foodNutrients,'208');
+  const p=getN(f.foodNutrients,1003)||getN(f.foodNutrients,'203');
+  const c=getN(f.foodNutrients,1005)||getN(f.foodNutrients,'205');
+  const fat=getN(f.foodNutrients,1004)||getN(f.foodNutrients,'204');
+  selFood={name:f.description,brand:f.brandOwner||'USDA',cal100:cal,p100:p,c100:c,f100:fat};
+  document.getElementById('apName').textContent=f.description;
+  document.getElementById('apSub').textContent=`${f.brandOwner||'USDA'} · per 100g`;
+  document.getElementById('apCal').textContent=cal;
+  document.getElementById('apP').textContent=p+'g';
+  document.getElementById('apC').textContent=c+'g';
+  document.getElementById('apF').textContent=fat+'g';
+  document.getElementById('apServing').value=100;
+  document.getElementById('addPanel').classList.add('show');
+  document.getElementById('addPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function recalcServing(){
+  if(!selFood)return;
+  const s=parseInt(document.getElementById('apServing').value)||100,m=s/100;
+  document.getElementById('apCal').textContent=Math.round(selFood.cal100*m);
+  document.getElementById('apP').textContent=Math.round(selFood.p100*m)+'g';
+  document.getElementById('apC').textContent=Math.round(selFood.c100*m)+'g';
+  document.getElementById('apF').textContent=Math.round(selFood.f100*m)+'g';
+}
+function confirmAdd(){
+  if(!selFood)return;
+  const s=parseInt(document.getElementById('apServing').value)||100,m=s/100;
+  addFoodItem({name:selFood.name,serving:`${s}g`,icon:foodEmoji(selFood.name),cal:Math.round(selFood.cal100*m),p:Math.round(selFood.p100*m),c:Math.round(selFood.c100*m),f:Math.round(selFood.f100*m)},activeMeal);
+  closeModal();
+  showToast(`Added ${selFood.name} to ${activeMeal}!`);
+}
+
+// Photo AI
+async function handlePhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    document.getElementById('photoPreview').style.display='block';
+    document.getElementById('photoImg').src=e.target.result;
+    document.getElementById('aiAnalyzing').classList.add('show');
+    document.getElementById('photoPanel').classList.remove('show');
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are Risn nutrition AI. Analyze a food image and return ONLY raw JSON: {"name":"Food Name","description":"brief desc","confidence":"High/Medium/Low","servingNote":"estimated serving","calories":000,"protein":00,"carbs":00,"fat":00}. No markdown.',messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:e.target.result.split(',')[1]}},{type:'text',text:'Identify food and estimate macros. JSON only.'}]}]})});
+      const d=await res.json();
+      const food=JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
+      document.getElementById('aiAnalyzing').classList.remove('show');
+      renderPhotoResult(food);
+    }catch{
+      document.getElementById('aiAnalyzing').classList.remove('show');
+      renderPhotoResult({name:'Mixed Meal',description:'AI Estimated',confidence:'Medium',calories:450,protein:32,carbs:48,fat:14,servingNote:'Estimated portion'});
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function renderPhotoResult(food){
+  document.getElementById('ppName').textContent=food.name||'Identified Meal';
+  document.getElementById('ppSub').textContent=food.description||'AI Estimated';
+  document.getElementById('ppCal').textContent=food.calories||'—';
+  document.getElementById('ppP').textContent=(food.protein||'—')+'g';
+  document.getElementById('ppC').textContent=(food.carbs||'—')+'g';
+  document.getElementById('ppF').textContent=(food.fat||'—')+'g';
+  document.getElementById('ppConf').textContent=`Confidence: ${food.confidence||'Medium'} · ${food.servingNote||'Est. serving'}`;
+  document.getElementById('photoPanel').classList.add('show');
+  window._photoFood=food;
+}
+function confirmPhoto(){
+  const food=window._photoFood;if(!food)return;
+  addFoodItem({name:food.name,serving:food.servingNote||'1 serving',icon:foodEmoji(food.name),cal:food.calories||0,p:food.protein||0,c:food.carbs||0,f:food.fat||0},activeMeal);
+  closeModal();
+  showToast(`${food.name} added via AI photo! 📸`);
+}
+function addFoodItem(item,meal){
+  const g=document.getElementById(`mg-${meal}`);
+  const empty=g.querySelector('.empty-meal');if(empty)empty.remove();
+  g.insertAdjacentHTML('beforeend',`<div class="food-item"><div class="food-icon">${item.icon}</div><div class="food-info"><div class="food-name">${item.name}</div><div class="food-serving">${item.serving}</div><div class="food-macros"><span class="fm-chip fm-cal">${item.cal} kcal</span><span class="fm-chip fm-p">P:${item.p}g</span><span class="fm-chip fm-c">C:${item.c}g</span><span class="fm-chip fm-f">F:${item.f}g</span></div></div><div class="food-del" onclick="removeFood(this)">×</div></div>`);
+  updateTotals();
+}
+function removeFood(btn){btn.closest('.food-item').remove();updateTotals();}
+function updateTotals(){
+  let cal=0,p=0,c=0,f=0;
+  document.querySelectorAll('.food-item').forEach(item=>{
+    const chips=item.querySelectorAll('.fm-chip');
+    if(chips[0])cal+=parseInt(chips[0].textContent)||0;
+    if(chips[1])p+=parseInt(chips[1].textContent.replace('P:',''))||0;
+    if(chips[2])c+=parseInt(chips[2].textContent.replace('C:',''))||0;
+    if(chips[3])f+=parseInt(chips[3].textContent.replace('F:',''))||0;
+  });
+  const goal=2300,rem=Math.max(0,goal-cal),pct=Math.min(cal/goal,1);
+  document.getElementById('calConsumed').textContent=cal.toLocaleString();
+  document.getElementById('calRem').textContent=rem+' left';
+  document.getElementById('calRing').style.strokeDashoffset=276-(276*pct);
+  document.getElementById('mrf-eaten').textContent=cal.toLocaleString();
+  document.getElementById('mrf-rem').textContent=rem;
+  document.getElementById('pVals').textContent=`${p} / 200g`;
+  document.getElementById('cVals').textContent=`${c} / 280g`;
+  document.getElementById('fVals').textContent=`${f} / 80g`;
+  document.getElementById('pBar').style.width=Math.min(p/200*100,100)+'%';
+  document.getElementById('cBar').style.width=Math.min(c/280*100,100)+'%';
+  document.getElementById('fBar').style.width=Math.min(f/80*100,100)+'%';
+}
+function foodEmoji(n){
+  n=n.toLowerCase();
+  if(n.includes('chicken'))return '🍗';if(n.includes('beef')||n.includes('steak'))return '🥩';
+  if(n.includes('fish')||n.includes('salmon')||n.includes('tuna'))return '🐟';if(n.includes('egg'))return '🥚';
+  if(n.includes('rice'))return '🍚';if(n.includes('oat')||n.includes('wheat'))return '🌾';
+  if(n.includes('bread'))return '🍞';if(n.includes('pasta'))return '🍝';if(n.includes('broccoli'))return '🥦';
+  if(n.includes('spinach')||n.includes('salad'))return '🥗';if(n.includes('banana'))return '🍌';
+  if(n.includes('apple'))return '🍎';if(n.includes('milk'))return '🥛';if(n.includes('cheese'))return '🧀';
+  if(n.includes('yogurt'))return '🫙';if(n.includes('sweet potato')||n.includes('potato'))return '🥔';
+  if(n.includes('protein')||n.includes('shake'))return '💪';if(n.includes('almond')||n.includes('nut'))return '🥜';
+  return '🍽️';
+}
+function getFallbackFoods(q){
+  const all=[{description:'Chicken Breast, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:120},{nutrientId:1003,value:22},{nutrientId:1005,value:0},{nutrientId:1004,value:2.6}]},{description:'Ground Beef, 90% Lean',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:176},{nutrientId:1003,value:20},{nutrientId:1005,value:0},{nutrientId:1004,value:11}]},{description:'White Rice, Cooked',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:130},{nutrientId:1003,value:2.7},{nutrientId:1005,value:28},{nutrientId:1004,value:0.3}]},{description:'Whole Eggs, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:143},{nutrientId:1003,value:13},{nutrientId:1005,value:1},{nutrientId:1004,value:10}]},{description:'Rolled Oats',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:389},{nutrientId:1003,value:17},{nutrientId:1005,value:66},{nutrientId:1004,value:7}]},{description:'Salmon, Atlantic',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:208},{nutrientId:1003,value:20},{nutrientId:1005,value:0},{nutrientId:1004,value:13}]},{description:'Broccoli, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:34},{nutrientId:1003,value:2.8},{nutrientId:1005,value:7},{nutrientId:1004,value:0.4}]},{description:'Sweet Potato, Raw',brandOwner:'USDA',dataType:'Foundation',foodNutrients:[{nutrientId:1008,value:86},{nutrientId:1003,value:1.6},{nutrientId:1005,value:20},{nutrientId:1004,value:0.1}]}];
+  const filtered=all.filter(f=>f.description.toLowerCase().includes(q.toLowerCase().split(' ')[0]));
+  return filtered.length?filtered:all.slice(0,4).concat([{description:q+' (Estimated)',brandOwner:'Estimated',dataType:'Est',foodNutrients:[{nutrientId:1008,value:200},{nutrientId:1003,value:15},{nutrientId:1005,value:20},{nutrientId:1004,value:8}]}]);
+}
+
+// ── RISE CHALLENGES ──
+const rChallenges={
+  '30day':{title:'30-Day Rise Challenge',desc:'Build every pillar for 30 days.',days:30},
+  'protein':{title:'7-Day Protein Challenge',desc:'Hit protein goal 7 days straight.',days:7},
+  'morning':{title:'21-Day Morning Habit',desc:'Morning routine for 21 days.',days:21},
+  'hydration':{title:'14-Day Hydration Reset',desc:'8 glasses every day for 2 weeks.',days:14},
+  'noscreen':{title:'No Screen After 9PM',desc:'No phone before sleep for 10 nights.',days:10},
+  'cut':{title:"Founder's 12-Week Cut",desc:'The protocol to reach sub-10% BF.',days:84}
+};
+let rActiveCh=null;
+
+function openChallenge(id){
+  rActiveCh=id;
+  const ch=rChallenges[id];
+  document.getElementById('chModalTitle').textContent=ch.title;
+  document.getElementById('chModalDesc').textContent=ch.desc;
+  buildChGrid(id,ch.days);
+  document.getElementById('chModal').classList.add('show');
+}
+function buildChGrid(id,days){
+  const saved=JSON.parse(localStorage.getItem('risn_ch_'+id)||'[]');
+  let html='',done=0,streak=0,cur=0;
+  for(let i=0;i<days;i++){
+    const isDone=saved.includes(i),isToday=i===saved.length;
+    if(isDone){done++;cur++;streak=Math.max(streak,cur);}else cur=0;
+    html+=`<div class="ch-day${isDone?' done':''}${isToday?' today':''}" onclick="toggleChDay(${i})">${i+1}</div>`;
+  }
+  document.getElementById('chDayGrid').innerHTML=html;
+  document.getElementById('chDone').textContent=done;
+  document.getElementById('chStreak').textContent=streak;
+  document.getElementById('chLeft').textContent=days-done;
+  const todayDone=saved.includes(saved.length-1)&&saved.length>0;
+  const btn=document.getElementById('chCheckinBtn');
+  btn.textContent=todayDone?'✓ Today Complete — See you tomorrow!':'✓ Check In Today';
+  btn.className='ch-checkin-btn'+(todayDone?' done-today':'');
+}
+function toggleChDay(idx){
+  if(!rActiveCh)return;
+  const key='risn_ch_'+rActiveCh;
+  let saved=JSON.parse(localStorage.getItem(key)||'[]');
+  saved.includes(idx)?saved=saved.filter(x=>x!==idx):saved.push(idx);
+  localStorage.setItem(key,JSON.stringify(saved));
+  buildChGrid(rActiveCh,rChallenges[rActiveCh].days);
+}
+function checkInToday(){
+  if(!rActiveCh)return;
+  const key='risn_ch_'+rActiveCh;
+  let saved=JSON.parse(localStorage.getItem(key)||'[]');
+  const today=saved.length;
+  if(!saved.includes(today)){saved.push(today);localStorage.setItem(key,JSON.stringify(saved));}
+  buildChGrid(rActiveCh,rChallenges[rActiveCh].days);
+  document.getElementById('chModal').classList.remove('show');
+  showToast(`Day ${today+1} checked in! Keep rising 🔥`);
+  if(saved.length===rChallenges[rActiveCh].days)setTimeout(()=>unlockBadge('🏆','Challenge Finisher!','You completed '+rChallenges[rActiveCh].title),500);
+}
+function unlockBadge(icon,name,desc){
+  document.getElementById('buIco').textContent=icon;
+  document.getElementById('buSubTxt').textContent=name+' — '+desc;
+  document.getElementById('badgeUnlock').classList.add('show');
+}
+
+// Rise Report
+function shareRiseReport(){
+  const text=`📊 My Week 12 Rise Report\n\n⬡ Avg Risn Score: 82 (↑+6)\n🔥 Streak: 14 days\n💪 4 workouts\n🍗 Protein: 5/7 days\n\nRising every day with Risn 🚀`;
+  if(navigator.share){navigator.share({title:'My Rise Report',text});}
+  else{navigator.clipboard?.writeText(text);showToast('Rise Report copied! Paste anywhere 📤');}
+}
+async function openAIReport(){
+  document.getElementById('aiReportModal').classList.add('show');
+  document.getElementById('armLoading').style.display='flex';
+  document.getElementById('armContent').classList.remove('show');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:"You are Risn's AI analyst. The founder went from obese to sub-10% BF. Give a deep personal weekly report in 3 sections: (1) What you're doing right, (2) Biggest weak point and exact fix, (3) Focus for next week. Be specific and expert-level. Use plain text, no markdown symbols.",messages:[{role:'user',content:'Week 12 data: Avg Risn Score 82 (up 6), best day Thursday (88), worst Saturday (61, 6h sleep), 4 workouts (PPL + Full Body), protein 165g avg vs 200g goal 5/7 days, sleep avg 7h12m vs 8h goal, mindfulness 7/7 days, 14-day streak. Give me my deep analysis.'}]})});
+    const d=await res.json();
+    const text=d.content?.[0]?.text||'';
+    document.getElementById('armLoading').style.display='none';
+    const paras=text.split(/\n\n+/).filter(s=>s.trim());
+    let html=paras.map(p=>{const lines=p.split('\n');return`<div class="arm-section"><div class="arm-section-title">${lines[0].replace(/[*#():0-9.]/g,'').trim()}</div><div class="arm-section-body">${lines.slice(1).join(' ').trim()||lines[0]}</div></div>`;}).join('');
+    html+=`<button style="width:100%;padding:13px;background:var(--accent);color:var(--bg);border:none;border-radius:100px;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-top:14px" onclick="shareRiseReport()">📤 Share This Report</button>`;
+    document.getElementById('armContent').innerHTML=html;
+    document.getElementById('armContent').classList.add('show');
+  }catch{
+    document.getElementById('armLoading').style.display='none';
+    document.getElementById('armContent').innerHTML=`<div class="arm-section"><div class="arm-section-title">Week Summary</div><div class="arm-section-body">Score of 82 with a 6-point improvement is excellent. Your mindfulness consistency (7/7) is your strongest pillar — protect it. The protein gap (165g vs 200g) is leaving muscle on the table. Add one shake daily to close it. Next week: protect Saturday sleep and hit protein every single day.</div></div><button style="width:100%;padding:13px;background:var(--accent);color:var(--bg);border:none;border-radius:100px;font-family:'Syne',sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-top:14px" onclick="shareRiseReport()">📤 Share</button>`;
+    document.getElementById('armContent').classList.add('show');
+  }
+}
+
+// Progress Photos
+let rPhotoEntries=JSON.parse(localStorage.getItem('risn_photos')||'[]');
+let rSlotPhotos={front:null,side:null,back:null};
+let rCurrentSlot=null;
+function renderPhotoTimeline(){
+  const tl=document.getElementById('risePhotoTimeline');
+  const empty=document.getElementById('risePhotoEmpty');
+  if(rPhotoEntries.length===0){tl.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tl.innerHTML=rPhotoEntries.slice().reverse().map(e=>`
+    <div class="pt-entry">
+      <div class="pt-photo-row">
+        <div class="pt-photo-slot">${e.front?`<img src="${e.front}">`:'📷'}<div class="pt-photo-lbl">Front</div></div>
+        <div class="pt-photo-slot">${e.side?`<img src="${e.side}">`:'📷'}<div class="pt-photo-lbl">Side</div></div>
+        <div class="pt-photo-slot">${e.back?`<img src="${e.back}">`:'📷'}<div class="pt-photo-lbl">Back</div></div>
+      </div>
+      <div class="pt-meta">
+        <div class="pt-date">${e.date}</div>
+        <div class="pt-stats">${e.weight?`<div class="pt-stat"><strong>${e.weight}</strong> lbs</div>`:''} ${e.bf?`<div class="pt-stat"><strong>${e.bf}%</strong> BF</div>`:''}</div>
+      </div>
+    </div>`).join('');
+}
+renderPhotoTimeline();
+function openPhotoModal(){
+  rSlotPhotos={front:null,side:null,back:null};
+  ['front','side','back'].forEach(s=>{const el=document.getElementById('rSlot-'+s);if(el){el.innerHTML=`<span class="p-slot-ico">📷</span><div class="p-slot-lbl">${s}</div>`;}});
+  document.getElementById('photoAddModal').classList.add('show');
+}
+function closePhotoModal(){document.getElementById('photoAddModal').classList.remove('show');}
+function triggerSlotCapture(slot){rCurrentSlot=slot;document.getElementById('rPhotoCapture').click();}
+function handleSlotCapture(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    rSlotPhotos[rCurrentSlot]=e.target.result;
+    const el=document.getElementById('rSlot-'+rCurrentSlot);
+    if(el)el.innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:13px"><div style="position:absolute;bottom:3px;left:0;right:0;text-align:center;background:rgba(0,0,0,0.5);padding:2px;font-size:7px;font-family:'Syne',sans-serif;font-weight:700;color:white;letter-spacing:0.08em;text-transform:uppercase">${rCurrentSlot}</div>`;
+  };
+  reader.readAsDataURL(file);input.value='';
+}
+function savePhotoCheckIn(){
+  const entry={date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),weight:document.getElementById('rPmWeight').value,bf:document.getElementById('rPmBF').value,...rSlotPhotos};
+  rPhotoEntries.push(entry);
+  try{localStorage.setItem('risn_photos',JSON.stringify(rPhotoEntries));}catch(e){console.warn('Storage full');}
+  renderPhotoTimeline();
+  closePhotoModal();
+  showToast('Check-in saved! Your transformation is documented 📸');
+  setTimeout(()=>unlockBadge('📸','Before & After','First progress photo logged. The transformation is real.'),500);
+}
+
+// Sleep
+function editSleepTime(type){
+  const val=prompt(type==='bed'?'Enter bedtime (e.g. 10:45 PM):':'Enter wake time (e.g. 6:05 AM):');
+  if(val){
+    const el=document.getElementById(type==='bed'?'riseSlpBed':'riseSlpWake');
+    if(el)el.textContent=val;
+    localStorage.setItem('risn_sleep_'+type,val);
+    showToast('Sleep time updated ✓');
+  }
+}
+const sb=localStorage.getItem('risn_sleep_bed');const sw=localStorage.getItem('risn_sleep_wake');
+if(sb){const e=document.getElementById('riseSlpBed');if(e)e.textContent=sb;}
+if(sw){const e=document.getElementById('riseSlpWake');if(e)e.textContent=sw;}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg){clearTimeout(toastTimer);document.getElementById('toastMsg').textContent=msg;document.getElementById('toast').classList.add('show');toastTimer=setTimeout(hideToast,4500);}
+function hideToast(){document.getElementById('toast').classList.remove('show');}
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;setTimeout(()=>document.getElementById('installBanner').classList.add('show'),2500);});
+document.getElementById('installBtn').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')document.getElementById('installBanner').classList.remove('show');deferredPrompt=null;}});
+if('serviceWorker' in navigator){const sw=`self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})));}
+</script>
+</body>
+</html>
