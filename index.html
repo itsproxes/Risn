@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Risn">
-<meta name="description" content="Risn — Rise every day. AI wellness for mind, body, nutrition & habits.">
+<meta name="description" content="Risn — Rise every day. Wellness for mind, body, nutrition & habits.">
 <title>Risn — Rise Every Day</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script>
@@ -2247,5 +2247,242 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 document.getElementById('installBtn').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')document.getElementById('installBanner').classList.remove('show');deferredPrompt=null;}});
 if('serviceWorker' in navigator){const sw=`self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})));}
 </script>
+
+<script>
+/* ===============================
+   RISN GAME ENGINE UPGRADE
+================================ */
+
+const RisnEngine = (()=>{
+
+const state = {
+xp: parseInt(localStorage.getItem("risn_xp")||0),
+level: parseInt(localStorage.getItem("risn_level")||1),
+streak: parseInt(localStorage.getItem("risn_streak")||0),
+lastDay: localStorage.getItem("risn_last_day")||null,
+habitsDoneToday: 0
+};
+
+function save(){
+localStorage.setItem("risn_xp",state.xp);
+localStorage.setItem("risn_level",state.level);
+localStorage.setItem("risn_streak",state.streak);
+localStorage.setItem("risn_last_day",state.lastDay);
+}
+
+function today(){
+return new Date().toISOString().slice(0,10);
+}
+
+function dailyReset(){
+
+const t=today();
+
+if(state.lastDay!==t){
+
+if(state.habitsDoneToday>0){
+state.streak++;
+}else{
+state.streak=0;
+}
+
+state.habitsDoneToday=0;
+state.lastDay=t;
+
+save();
+updateDashboard();
+
+}
+
+}
+
+function addXP(amount,el){
+
+state.xp+=amount;
+
+state.habitsDoneToday++;
+
+floatXP(el,amount);
+
+checkLevel();
+
+save();
+updateDashboard();
+
+}
+
+function xpForLevel(lvl){
+return 100 + (lvl*lvl*20);
+}
+
+function checkLevel(){
+
+const need=xpForLevel(state.level);
+
+if(state.xp>=need){
+
+state.xp-=need;
+state.level++;
+
+showLevelUp();
+
+}
+
+}
+
+function floatXP(el,amount){
+
+if(!el)return;
+
+const rect=el.getBoundingClientRect();
+
+const f=document.createElement("div");
+f.className="xp-float";
+f.textContent="+"+amount+" XP";
+
+f.style.left=rect.left+"px";
+f.style.top=rect.top+"px";
+
+document.body.appendChild(f);
+
+setTimeout(()=>f.remove(),1400);
+
+}
+
+function showLevelUp(){
+
+const o=document.createElement("div");
+o.style.position="fixed";
+o.style.inset="0";
+o.style.background="rgba(0,0,0,.85)";
+o.style.display="flex";
+o.style.alignItems="center";
+o.style.justifyContent="center";
+o.style.zIndex="9999";
+o.style.fontFamily="Syne";
+
+o.innerHTML=`
+<div style="text-align:center;color:white">
+<div style="font-size:64px">⭐</div>
+<div style="font-size:32px;font-weight:800">LEVEL ${state.level}</div>
+<div style="opacity:.7;margin-top:6px">You leveled up.</div>
+</div>
+`;
+
+document.body.appendChild(o);
+
+setTimeout(()=>o.remove(),2000);
+
+}
+
+function updateDashboard(){
+
+const lvl=document.getElementById("engineLevel");
+const streak=document.getElementById("engineStreak");
+const xp=document.getElementById("engineXP");
+
+if(lvl)lvl.textContent=state.level;
+if(streak)streak.textContent=state.streak;
+if(xp)xp.textContent=state.xp;
+
+}
+
+function attachHabitEngine(){
+
+document.querySelectorAll(".habit-item").forEach(h=>{
+
+h.addEventListener("click",()=>{
+
+if(h.classList.contains("done"))return;
+
+h.classList.add("done");
+
+addXP(25,h);
+
+});
+
+});
+
+}
+
+function aiSuggestion(){
+
+const suggestions=[
+"Do one habit you’ve been avoiding.",
+"Drink water and stretch.",
+"Take a 5 minute walk.",
+"Log your next meal.",
+"Finish your smallest task."
+];
+
+const el=document.getElementById("aiSuggestion");
+
+if(el){
+
+const i=Math.floor(Math.random()*suggestions.length);
+el.textContent=suggestions[i];
+
+}
+
+}
+
+function init(){
+
+dailyReset();
+attachHabitEngine();
+aiSuggestion();
+updateDashboard();
+
+}
+
+return{init,addXP};
+
+})();
+
+document.addEventListener("DOMContentLoaded",RisnEngine.init);
+</script>
+
+
+<script>
+// --- Injected Game Systems ---
+let xp = +localStorage.getItem("xp")||0;
+let streak = +localStorage.getItem("streak")||0;
+
+function addXP(n=10){
+ xp+=n;
+ localStorage.setItem("xp",xp);
+ showToast("+"+n+" XP");
+}
+
+function addStreak(){
+ streak++;
+ localStorage.setItem("streak",streak);
+ showToast("🔥 Streak: "+streak);
+}
+
+function showToast(msg){
+ let t=document.createElement("div");
+ t.innerText=msg;
+ t.style.position="fixed";
+ t.style.bottom="100px";
+ t.style.left="50%";
+ t.style.transform="translateX(-50%)";
+ t.style.background="#111";
+ t.style.padding="10px 16px";
+ t.style.borderRadius="12px";
+ t.style.zIndex=9999;
+ document.body.appendChild(t);
+ setTimeout(()=>t.remove(),1500);
+}
+
+// Hook habits
+document.addEventListener("click",e=>{
+ if(e.target.closest(".habit-item")){
+   addXP(15);
+   addStreak();
+ }
+});
+</script>
+
 </body>
 </html>
